@@ -27,7 +27,6 @@ class CLITestCase(unittest.TestCase):
             self.checks[cmd_idx] = []
         self.checks[cmd_idx].append(check)
 
-
     def check_in(self, s):
         self._add_check({"type": "in", "args": s})
 
