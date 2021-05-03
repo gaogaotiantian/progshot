@@ -10,7 +10,7 @@ class TestPSVIewerBasic(CLITmpl):
     @classmethod
     def setUpClass(cls):
         cls.test_dir = os.path.dirname(__file__)
-        cls().generate_progshot(os.path.join(cls.test_dir, "test_scripts", "basic.py"))
+        cls().generate_progshot(os.path.join(cls.test_dir, "test_scripts", "basic.py"), coverage=False)
 
     @classmethod
     def tearDownClass(cls):

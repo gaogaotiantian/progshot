@@ -73,8 +73,10 @@ class CLITmpl(unittest.TestCase):
             elif cmd[0] == "psview":
                 cmd = ["coverage", "run", "--parallel-mode", "--pylib", "-m", "progshot.cli"] + cmd[1:]
 
-    def generate_progshot(self, infile):
-        if os.getenv("COVERAGE_RUN"):
+    def generate_progshot(self, infile, coverage=None):
+        if coverage is None:
+            coverage = os.getenv("COVERAGE_RUN")
+        if coverage:
             cmd = ["coverage", "run", "--parallel-mode", "--pylib", infile]
         else:
             cmd = ["python", infile]
