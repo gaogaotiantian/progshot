@@ -15,9 +15,12 @@ class Frame:
     def __init__(self, frame, filename, start_lineno, frame_lines, curr_lineno):
         self.locals = {}
         for key, val in frame.f_locals.items():
-            if dill.pickles(val):
-                self.locals[key] = val
-            else:
+            try:
+                if dill.pickles(val):
+                    self.locals[key] = val
+                else:
+                    self.locals[key] = UnPickleable()
+            except Exception:
                 self.locals[key] = UnPickleable()
 
         self.filename = filename
