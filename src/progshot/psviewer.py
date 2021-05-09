@@ -23,3 +23,6 @@ class ProgShotViewer:
 
     def get_source_line(self, filename, lineno):
         return self.get_source_lines(filename, lineno, lineno + 1)
+
+    def get_source(self, filename):
+        return self.sources[filename]

@@ -42,7 +42,8 @@ setuptools.setup(
     ],
     entry_points={
         "console_scripts": [
-            "psview = progshot:cli_main"
+            "psview = progshot:cli_main",
+            "pswebserver = progshot:web_server_main"
         ]
     }
 )
