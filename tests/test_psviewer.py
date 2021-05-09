@@ -76,3 +76,15 @@ class TestPSVIewerBasic(CLITmpl):
         t.command("w")
         t.check_true(lambda s: "*" in [line for line in s.strip().split('\n') if ":" in line][0])
         t.run()
+
+    def test_print(self):
+        t = self.create_test("out.pshot")
+        t.command("p d")
+        t.check_in("NameError")
+        t.run()
+
+    def test_rich(self):
+        t = self.create_test("out.pshot", enable_rich=True)
+        t.command("ll")
+        t.check_in("func_f")
+        t.run()

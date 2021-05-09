@@ -7,6 +7,7 @@ import functools
 from rich.console import Console
 from rich.syntax import Syntax
 import sys
+import traceback
 from .psviewer import ProgShotViewer
 try:
     import readline
@@ -125,8 +126,8 @@ class CLI:
     def error(self, s):
         print(f"Error, {s}")
 
-    def info(self, s):
-        print(s)
+    def info(self, s, end="\n"):
+        print(s, end=end)
 
     def message(self, s):
         if self.enable_rich:
@@ -215,8 +216,8 @@ class CLI:
             self.info("Usage: p <arg>")
         try:
             self.message(self._get_val(val))
-        except Exception:
-            self.info(f"Unable to parse {val}")
+        except Exception as e:
+            self.info("".join(traceback.format_exception_only(type(e), e)), end="")
     do_p = do_print
 
     def do_quit(self, args):

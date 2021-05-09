@@ -12,11 +12,12 @@ import unittest
 
 
 class CLITestCase(unittest.TestCase):
-    def __init__(self, infile):
+    def __init__(self, infile, enable_rich=False):
         self.infile = infile
         super().__init__()
         self.commands = []
         self.checks = {}
+        self.enable_rich = enable_rich
 
     def command(self, cmd):
         self.commands.append(cmd)
@@ -40,7 +41,7 @@ class CLITestCase(unittest.TestCase):
         stdin = sys.stdin
         self.commands.append("q\n")
         sys.stdin = io.StringIO("\n".join(self.commands))
-        cli = CLI(self.infile, enable_rich=False)
+        cli = CLI(self.infile, enable_rich=self.enable_rich)
         with io.StringIO() as buf, redirect_stdout(buf):
             cli.run()
             result = buf.getvalue()
@@ -83,5 +84,5 @@ class CLITmpl(unittest.TestCase):
         result = subprocess.run(cmd, stdout=subprocess.PIPE, timeout=30)
         self.assertEqual(result.returncode, 0)
 
-    def create_test(self, infile):
-        return CLITestCase(infile)
+    def create_test(self, infile, **kwargs):
+        return CLITestCase(infile, **kwargs)
