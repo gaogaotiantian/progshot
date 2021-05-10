@@ -60,7 +60,12 @@ class CLI:
         self.viewer = ProgShotViewer(filename)
         self.enable_rich = enable_rich
         self.console = Console()
+        self.films_count = len(self.viewer.films)
         self._switch_film(0)
+
+    @property
+    def films(self):
+        return self.viewer.films
 
     def run(self):
         self._show_curr_frame()
@@ -95,12 +100,24 @@ class CLI:
             return finish
 
     def _switch_film(self, film_idx):
-        if 0 <= film_idx < len(self.viewer.films):
+        # If it's a negative index, make it positive
+        if -self.films_count <= film_idx < 0:
+            film_idx = self.films_count + film_idx
+
+        if 0 <= film_idx < self.films_count:
             self.curr_film_idx = film_idx
-            self.curr_film = self.viewer.films[film_idx]
+            self.curr_film = self.films[film_idx]
             self.curr_frame_idx = 0
             self.curr_frame = self.curr_film.frames[self.curr_frame_idx]
             return True
+        return False
+
+    def _switch_film_name(self, film_name):
+        # We start from the current index because name could be duplicated
+        for idx in list(range(self.curr_film_idx, self.films_count)) + list(range(0, self.curr_film_idx)):
+            film = self.films[idx]
+            if film.name == film_name:
+                return self._switch_film(idx)
         return False
 
     def _show_curr_frame(self, lineno=None):
@@ -113,6 +130,7 @@ class CLI:
             start,
             end
         )
+        self.info(f"==== Film {self.curr_film_idx + 1}/{self.films_count} - {self.curr_film.name} ====")
         self._show_code(code, start, curr_lineno=self.curr_frame.curr_lineno)
 
     def _show_code(self, code, start_lineno, curr_lineno=set()):
@@ -194,6 +212,25 @@ class CLI:
             return
         self._show_curr_frame()
     do_b = do_back
+
+    @check_args(str, 1)
+    def do_goto(self, bookmark):
+        """
+        bookmark could be a string for name or an 1-index
+        """
+        try:
+            bookmark = int(bookmark)
+            if bookmark >= 1:
+                bookmark -= 1
+            if not self._switch_film(bookmark):
+                self.error("Target film does is out of range")
+                return
+        except ValueError:
+            if not self._switch_film_name(bookmark):
+                self.error(f"Could not find film '{bookmark}'")
+                return
+        self._show_curr_frame()
+    do_g = do_goto
 
     @check_args(None, None)
     def do_where(self):

@@ -17,8 +17,12 @@ class ProgShot:
         atexit.register(self.dump)
         self.config(**kwargs)
 
-    def capture(self):
-        new_film = Film(inspect.getouterframes(inspect.currentframe().f_back))
+    def capture(self, name=None, frame=None):
+        if frame is None:
+            frame = inspect.currentframe().f_back
+        if name is None:
+            name = f"Film-{len(self._films) + 1}"
+        new_film = Film(inspect.getouterframes(frame), name=name)
         for source in new_film.sources:
             if source not in self._sources:
                 try:

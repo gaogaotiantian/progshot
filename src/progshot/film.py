@@ -34,7 +34,7 @@ class Film:
     """
     A film contains information of the whole program at a specific point
     """
-    def __init__(self, frame_info):
+    def __init__(self, frame_info, name=None):
         """
         frame_info is from either
             * inspect.getouterframes()
@@ -44,6 +44,7 @@ class Film:
         self.frames = []
         if isinstance(frame_info, list):
             self.load_from_frames(frame_info)
+            self.name = name
         elif isinstance(frame_info, bytes):
             self.load_from_dill(frame_info)
 
@@ -69,8 +70,10 @@ class Film:
     def load_from_dill(self, dill_raw):
         data = dill.loads(dill_raw)
         self.frames = data["frames"]
+        self.name = data["name"]
 
     def dumps(self):
         return dill.dumps({
             "frames": self.frames,
+            "name": self.name
         })

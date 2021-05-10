@@ -67,6 +67,15 @@ class TestPSVIewerBasic(CLITmpl):
         t.check_in("3")
         t.run()
 
+    def test_goto(self):
+        t = self.create_test("out.pshot")
+        t.command("g 2")
+        t.command("p i")
+        t.check_in("1")
+        t.command("goto Film-4")
+        t.check_in("3")
+        t.run()
+
     def test_where(self):
         t = self.create_test("out.pshot")
         t.command("w")
