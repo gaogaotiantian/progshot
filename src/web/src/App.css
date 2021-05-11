@@ -1,0 +1,89 @@
+.App {
+  text-align: center;
+}
+
+.App-logo {
+  height: 40vmin;
+  pointer-events: none;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .App-logo {
+    animation: App-logo-spin infinite 20s linear;
+  }
+}
+
+.App-header {
+  background-color: #282c34;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: calc(10px + 2vmin);
+  color: white;
+}
+
+.App-link {
+  color: #61dafb;
+}
+
+@keyframes App-logo-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+::-webkit-scrollbar {
+  display: none;
+}
+
+.source { 
+  grid-area: source; 
+}
+.terminal{ 
+  grid-area: terminal; 
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.variables{ 
+  grid-area: variables; 
+}
+.stack{
+  grid-area: stack;
+}
+
+.grid-container {
+  display: grid;
+  grid-template-areas:
+    'source variables'
+    'source variables'
+    'source terminal'
+    'stack terminal';
+  grid-template-rows: 1fr 1fr 0.8fr 1.2fr;
+  grid-template-columns: 1fr 1fr ;
+  grid-gap: 10px;
+  padding: 10px;
+  margin: 0;
+  height: 95vh;
+}
+
+input {
+  background: #2d2d2d;
+  display:table-cell; 
+  width:100%;
+  border: none;
+  outline: none;
+  color: #ccc;
+	font-family: consolas, monaco, 'andale mono', 'ubuntu mono', monospace;
+	font-size: 1em;
+	text-align: left;
+	white-space: pre;
+	word-spacing: normal;
+	word-break: normal;
+	word-wrap: normal;
+	line-height: 1.5;
+}
