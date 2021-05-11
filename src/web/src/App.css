@@ -37,17 +37,38 @@
   }
 }
 
-pre {
-  overflow: scroll;
-  height: 90vh;
+::-webkit-scrollbar {
+  display: none;
 }
 
-.row {
-  display: flex;
+.source { 
+  grid-area: source; 
+}
+.terminal{ 
+  grid-area: terminal; 
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.variables{ 
+  grid-area: variables; 
+}
+.stack{
+  grid-area: stack;
 }
 
-.column {
-  flex: 50%;
+.grid-container {
+  display: grid;
+  grid-template-areas:
+    'source variables'
+    'source variables'
+    'source terminal'
+    'stack terminal';
+  grid-template-rows: 1fr 1fr 0.8fr 1.2fr;
+  grid-template-columns: 1fr 1fr ;
+  grid-gap: 10px;
+  padding: 10px;
+  margin: 0;
+  height: 95vh;
 }
 
 input {

@@ -1,60 +1,62 @@
-import http.server
-import urllib.parse
+import asyncio
+import websockets
 import json
 import sys
-from functools import partial
 from .webinterface import WebInterface
 
 hostName = "localhost"
 serverPort = 8080
 
 
-class ProgShotWebServer(http.server.SimpleHTTPRequestHandler):
-    def __init__(self, filename, request, client_address, server):
-        self.web_interface = WebInterface(filename)
-        super().__init__(request, client_address, server)
+class ProgShotWebServer:
+    def __init__(self, web_interface):
+        self.web_interface = web_interface
 
-    def do_GET(self):
-        parsed = urllib.parse.urlparse(self.path)
-        print(parsed.path)
-        if parsed.path == "/":
-            source = self.web_interface.get_source()
-            self.send_response(200)
-            self.end_headers()
-            self.wfile.write(bytes(json.dumps(source), "utf-8"))
-        elif parsed.path == "/command":
-            self.send_response(200)
-            self.end_headers()
-            queries = dict(urllib.parse.parse_qsl(parsed.query))
-            self.web_interface.parse_cmd(queries["command"])
-            exeResult = {"console": self.web_interface.output,
-                         "source": self.web_interface.get_source()}
-            self.wfile.write(bytes(json.dumps(exeResult), "utf-8"))
-        else:
-            self.send_response(200)
-            self.end_headers()
-            self.wfile.write(bytes("Hello World!", "utf-8"))
+    async def communication(self, websocket, path):
+        async for message in websocket:
+            request = json.loads(message)
+            response = self.parse_request(request)
+            await websocket.send(json.dumps(response))
 
-    def end_headers(self):
-        self.send_header('Access-Control-Allow-Origin', '*')
-        http.server.SimpleHTTPRequestHandler.end_headers(self)
+    def parse_request(self, req):
+        res = {}
+        if req["type"] == "init":
+            res = {
+                "source": self.web_interface.get_source(),
+                "stack": self.web_interface.get_stack()
+            }
+        elif req["type"] == "console":
+            self.web_interface.parse_cmd(req["command"])
+            res = {
+                "console": self.web_interface.get_output(),
+                "source": self.web_interface.get_source(),
+                "stack": self.web_interface.get_stack()
+            }
+        elif req["type"] == "command":
+            self.web_interface.parse_cmd(req["command"])
+            res = {
+                "source": self.web_interface.get_source(),
+                "stack": self.web_interface.get_stack()
+            }
+        return res
+
+    def exe_command(self, command):
+        self.web_interface.parse_cmd(command)
+        return {
+            "console": self.web_interface.get_output(),
+            "source": self.web_interface.get_source()
+        }
 
 
 def web_server_main():
     if len(sys.argv) != 2:
         print("Need one argument!", file=sys.stderr)
         exit(1)
-    handler = partial(ProgShotWebServer, sys.argv[1])
-    webServer = http.server.HTTPServer((hostName, serverPort), handler)
-    print("Server started http://%s:%s" % (hostName, serverPort))
-
-    try:
-        webServer.serve_forever()
-    except KeyboardInterrupt:
-        pass
-
-    webServer.server_close()
-    print("Server stopped.")
+    web_interface = WebInterface(sys.argv[1])
+    web_server = ProgShotWebServer(web_interface)
+    start_server = websockets.serve(web_server.communication, hostName, serverPort)
+    asyncio.get_event_loop().run_until_complete(start_server)
+    asyncio.get_event_loop().run_forever()
 
 
 if __name__ == "__main__":
