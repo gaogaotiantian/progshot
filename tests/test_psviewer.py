@@ -2,6 +2,7 @@
 # For details: https://github.com/gaogaotiantian/progshot/blob/master/NOTICE.txt
 
 
+from datetime import time
 from .cli_tmpl import CLITmpl
 import os
 
@@ -88,13 +89,30 @@ class TestPSVIewerBasic(CLITmpl):
         t = self.create_test("out.pshot")
         t.command("p d")
         t.check_in("NameError")
+        t.command("p")
+        t.check_in("Usage")
         t.run()
 
     def test_rich(self):
         t = self.create_test("out.pshot", enable_rich=True)
         t.command("ll")
         t.check_in("func_f")
+        t.command("w")
+        t.check_in("basic.py")
         t.run()
+
+    def test_invalid(self):
+        t = self.create_test("out.pshot")
+        t.command("invalid test")
+        t.check_in("invalid test")
+
+    def test_cmdline(self):
+        p = self.run_cmd(["psview", "out.pshot"])
+        out, _ = p.communicate("q\n", timeout=5)
+        self.assertIn("Film-1", out)
+        p = self.run_cmd(["psview", "no_such_file"])
+        out, _ = p.communicate(timeout=5)
+        self.assertIn("Traceback", out)
 
 
 class TestPSVIewerTrace(CLITmpl):
