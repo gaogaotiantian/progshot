@@ -121,7 +121,6 @@ class TestPSVIewerTrace(CLITmpl):
         t.check_equal(lambda s: s.count('>'), 1)
         t.run()
 
-
     def test_step(self):
         t = self.create_test("out.pshot")
         t.command("s")
