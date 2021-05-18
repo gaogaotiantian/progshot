@@ -5,6 +5,7 @@
 import os
 import progshot
 import unittest
+from .cli_tmpl import CLITmpl
 
 
 class TestProgShot(unittest.TestCase):
@@ -23,3 +24,13 @@ class TestProgShot(unittest.TestCase):
         self.assertEqual(ps._save_at_exit, False)
         with self.assertRaises(TypeError):
             ps.config(save_at_exit="False")
+
+
+class TestProgshotCLI(CLITmpl):
+    def test_gen(self):
+        self.test_dir = os.path.dirname(__file__)
+        for dirpath, _, files in os.walk(os.path.join(self.test_dir, "test_scripts")):
+            for filename in files:
+                self.generate_progshot(os.path.join(dirpath, filename))
+                self.assertTrue(os.path.exists("out.pshot"))
+                os.remove("out.pshot")
