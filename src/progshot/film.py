@@ -15,6 +15,10 @@ class Frame:
     def __init__(self, frame, filename, start_lineno, frame_lines, curr_lineno):
         self.locals = {}
         for key, val in frame.f_locals.items():
+            m = inspect.getmodule(val)
+            if m and hasattr(m, "__package__") and m.__package__ == "progshot":
+                # Skip the variable if it's in progshot
+                continue
             try:
                 if dill.pickles(val):
                     self.locals[key] = val
@@ -23,6 +27,7 @@ class Frame:
             except Exception:
                 self.locals[key] = UnPickleable()
 
+        self.frame_id = id(frame)
         self.filename = filename
         self.start_lineno = start_lineno
         self.frame_lines = frame_lines
@@ -51,6 +56,10 @@ class Film:
     def load_from_frames(self, frames):
         self.sources = set()
         for f_info in frames:
+            m = inspect.getmodule(f_info.frame)
+            if m and hasattr(m, "__package__") and m.__package__ == "progshot":
+                # Skip the frame if it's in progshot
+                continue
             filename = os.path.abspath(f_info.filename)
             lines, start_lineno = inspect.getsourcelines(f_info.frame)
             if start_lineno == 0:

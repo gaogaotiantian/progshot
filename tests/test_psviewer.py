@@ -21,32 +21,30 @@ class TestPSVIewerBasic(CLITmpl):
         t.check_in("def func_f(i)")
         t.run()
 
-    def test_next(self):
+    def test_step(self):
         t = self.create_test("out.pshot")
-        t.command("n")
+        t.command("s")
         t.check_in("def func_f(i)")
         t.command("p i")
         t.check_in("1")
-        t.command("next")
+        t.command("step")
         t.command("p i")
         t.check_in("2")
-        t.command("next 2")
+        t.command("step 2")
         t.command("p i")
         t.check_in("4")
         t.run()
 
-    def test_back(self):
+    def test_nextback(self):
         t = self.create_test("out.pshot")
-        t.command("n 5")
+        for _ in range(5):
+            t.command("n")
         t.command("b")
         t.command("p i")
         t.check_in("4")
-        t.command("b 2")
-        t.command("p i")
-        t.check_in("2")
         t.command("back")
         t.command("p i")
-        t.check_in("1")
+        t.check_in("3")
         t.run()
 
     def test_up(self):
@@ -96,4 +94,56 @@ class TestPSVIewerBasic(CLITmpl):
         t = self.create_test("out.pshot", enable_rich=True)
         t.command("ll")
         t.check_in("func_f")
+        t.run()
+
+
+class TestPSVIewerTrace(CLITmpl):
+    @classmethod
+    def setUpClass(cls):
+        cls.test_dir = os.path.dirname(__file__)
+        cls().generate_progshot(os.path.join(cls.test_dir, "test_scripts", "trace_basic.py"), coverage=False)
+
+    @classmethod
+    def tearDownClass(cls):
+        os.remove("out.pshot")
+
+    def test_load(self):
+        t = self.create_test("out.pshot")
+        t.command("p i")
+        t.check_in("0")
+        t.command("ll")
+        t.check_in("@trace")
+        t.run()
+
+    def test_where(self):
+        t = self.create_test("out.pshot")
+        t.command("w")
+        t.check_equal(lambda s: s.count('>'), 1)
+        t.run()
+
+
+    def test_step(self):
+        t = self.create_test("out.pshot")
+        t.command("s")
+        t.command("s")
+        t.command("ll")
+        t.check_in("random")
+        t.run()
+
+    def test_stepback(self):
+        t = self.create_test("out.pshot")
+        t.command("n")
+        t.command("n")
+        t.command("sb")
+        t.command("p i")
+        t.check_in("0")
+        t.command("ll")
+        t.check_in("random")
+        for _ in range(4):
+            t.command("sb")
+            t.command("ll")
+            t.check_in("random")
+        t.command("sb")
+        t.command("ll")
+        t.check_not_in("random")
         t.run()

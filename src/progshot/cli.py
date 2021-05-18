@@ -86,11 +86,11 @@ class CLI:
         if not args:
             return False
 
-        cmd = args[0]
+        cmd_type = args[0]
         cmd_args = args[1:]
 
         try:
-            func = getattr(self, "do_" + cmd)
+            func = getattr(self, "do_" + cmd_type)
         except AttributeError:
             return self._do_default(cmd)
         finish = func(cmd_args)
@@ -99,12 +99,35 @@ class CLI:
         else:
             return finish
 
-    def _switch_film(self, film_idx):
+    def _is_valid_film_idx(self, film_idx):
+        return 0 <= film_idx < self.films_count
+
+    def _is_child_or_sibling_film(self, film, allow_sibling=True):
+        """
+        return whether film is the child or sibling of current film
+               or whether this film is captured on subcalls from the
+               current film or on the same frame
+        """
+        if allow_sibling:
+            if len(film.frames) < len(self.curr_film.frames):
+                return False
+        else:
+            if len(film.frames) <= len(self.curr_film.frames):
+                return False
+
+        # Compare it backwards because we compare from the outermost frame
+        for idx in range(-1, -len(self.curr_film.frames) - 1, -1):
+            if film.frames[idx].frame_id != self.curr_film.frames[idx].frame_id:
+                return False
+        return True
+
+    def _switch_film(self, film_idx, allow_negative=False):
         # If it's a negative index, make it positive
-        if -self.films_count <= film_idx < 0:
+        # Treat negative index as python counting from back
+        if allow_negative and -self.films_count <= film_idx < 0:
             film_idx = self.films_count + film_idx
 
-        if 0 <= film_idx < self.films_count:
+        if self._is_valid_film_idx(film_idx):
             self.curr_film_idx = film_idx
             self.curr_film = self.films[film_idx]
             self.curr_frame_idx = 0
@@ -119,6 +142,35 @@ class CLI:
             if film.name == film_name:
                 return self._switch_film(idx)
         return False
+
+    def _switch_film_frame(self, backward=False, allow_same=True):
+        """
+        Switch to the next or previous film that is not the children of
+        current film.
+
+        If allow_same is True, switch to the same frame if possible.
+        If allow_same is False, switch to the parent frame (return)
+
+        This is used for n/b/r/rb
+        If such film does not exist, switch to +1/-1
+        """
+        if backward:
+            step = -1
+        else:
+            step = 1
+        film_idx = self.curr_film_idx + step
+        while self._is_valid_film_idx(film_idx):
+            if not self._is_child_or_sibling_film(self.films[film_idx], allow_sibling=not allow_same):
+                break
+            film_idx += step
+
+        return self._switch_film(film_idx)
+
+    def _switch_film_out_frame(self, backward=False):
+        return self._switch_film_frame(backward=backward, allow_same=False)
+
+    def _switch_film_same_frame(self, backward=False):
+        return self._switch_film_frame(backward=backward, allow_same=True)
 
     def _show_curr_frame(self, lineno=None):
         if lineno is None:
@@ -154,7 +206,7 @@ class CLI:
             print(s)
 
     def _do_default(self, args):
-        print(f"unknown syntax {args}")
+        print(f"Unknown syntax {args}")
         return False
 
     def _get_val(self, val):
@@ -198,20 +250,52 @@ class CLI:
     do_d = do_down
 
     @check_args(int, 1)
-    def do_next(self, step):
+    def do_step(self, step):
         if not self._switch_film(self.curr_film_idx + step):
+            self.error("Target film is out of range")
+            return
+        self._show_curr_frame()
+    do_s = do_step
+
+    @check_args(int, 1)
+    def do_stepback(self, step):
+        if not self._switch_film(self.curr_film_idx - step):
+            self.error("Target film is out of range")
+            return
+        self._show_curr_frame()
+    do_sb = do_stepback
+
+    @check_args(None, None)
+    def do_next(self):
+        if not self._switch_film_same_frame(backward=False):
             self.error("Target film is out of range")
             return
         self._show_curr_frame()
     do_n = do_next
 
-    @check_args(int, 1)
-    def do_back(self, step):
-        if not self._switch_film(self.curr_film_idx - step):
+    @check_args(None, None)
+    def do_back(self):
+        if not self._switch_film_same_frame(backward=True):
             self.error("Target film is out of range")
             return
         self._show_curr_frame()
     do_b = do_back
+
+    @check_args(None, None)
+    def do_return(self):
+        if not self._switch_film_out_frame(backward=False):
+            self.error("Target film is out of range")
+            return
+        self._show_curr_frame()
+    do_r = do_return
+
+    @check_args(None, None)
+    def do_returnback(self):
+        if not self._switch_film_out_frame(backward=True):
+            self.error("Target film is out of range")
+            return
+        self._show_curr_frame()
+    do_rb = do_returnback
 
     @check_args(str, 1)
     def do_goto(self, bookmark):
@@ -222,7 +306,7 @@ class CLI:
             bookmark = int(bookmark)
             if bookmark >= 1:
                 bookmark -= 1
-            if not self._switch_film(bookmark):
+            if not self._switch_film(bookmark, allow_negative=True):
                 self.error("Target film does is out of range")
                 return
         except ValueError:

@@ -10,9 +10,11 @@ from .cli import cli_main
 _pshot = ProgShot()
 capture = _pshot.capture
 config = _pshot.config
+trace = _pshot.trace
 
 __all__ = [
     "capture",
     "config",
-    "cli_main"
+    "cli_main",
+    "trace"
 ]

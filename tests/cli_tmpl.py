@@ -37,6 +37,9 @@ class CLITestCase(unittest.TestCase):
     def check_true(self, func):
         self._add_check({"type": "true", "args": func})
 
+    def check_equal(self, func, val):
+        self._add_check({"type": "equal", "args": (func, val)})
+
     def run(self):
         stdin = sys.stdin
         self.commands.append("q\n")
@@ -62,6 +65,8 @@ class CLITestCase(unittest.TestCase):
             self.assertNotIn(check["args"], output)
         elif check["type"] == "true":
             self.assertTrue(check["args"](output))
+        elif check["type"] == "equal":
+            self.assertEqual(check["args"][0](output), check["args"][1])
         else:
             raise ValueError("Unknown Check!")
 
