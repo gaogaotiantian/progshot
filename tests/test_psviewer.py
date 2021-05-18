@@ -2,7 +2,6 @@
 # For details: https://github.com/gaogaotiantian/progshot/blob/master/NOTICE.txt
 
 
-from datetime import time
 from .cli_tmpl import CLITmpl
 import os
 
