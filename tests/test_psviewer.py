@@ -19,6 +19,7 @@ class TestPSVIewerBasic(CLITmpl):
     def test_read(self):
         t = self.create_test("out.pshot")
         t.check_in("def func_f(i)")
+        t.command("q")
         t.run()
 
     def test_list(self):
@@ -26,6 +27,7 @@ class TestPSVIewerBasic(CLITmpl):
         t.command("l")
         t.check_in("func_f")
         t.check_not_in("func_g")
+        t.run()
 
     def test_step(self):
         t = self.create_test("out.pshot")
@@ -112,6 +114,7 @@ class TestPSVIewerBasic(CLITmpl):
         t = self.create_test("out.pshot")
         t.command("invalid test")
         t.check_in("invalid test")
+        t.run()
 
     def test_cmdline(self):
         p = self.run_cmd(["psview", "out.pshot"])
@@ -184,6 +187,7 @@ class TestPSViewerTrace(CLITmpl):
         t.command("n")
         t.command("p _")
         t.check_in("1")
+        t.run()
 
     def test_returnback(self):
         t = self.create_test("out.pshot")
@@ -197,6 +201,7 @@ class TestPSViewerTrace(CLITmpl):
         t.command("n")
         t.command("p _")
         t.check_in("0")
+        t.run()
 
 
 class TestPSViewerInvalid(CLITmpl):
@@ -226,6 +231,10 @@ class TestPSViewerInvalid(CLITmpl):
         t.check_in("out of range")
         t.command("s")
         t.check_in("out of range")
+        t.command("g 1000")
+        t.check_in("out of range")
+        t.command("g invalid")
+        t.check_in("Error")
         t.run()
 
     def test_invalid_args(self):
@@ -236,4 +245,8 @@ class TestPSViewerInvalid(CLITmpl):
         t.check_in("Error")
         t.command("d lol")
         t.check_in("Error")
+        t.command("invalid lol")
+        t.check_in("Unknown")
+        t.command("")
+        t.check_true(lambda s: len(s) < 3)
         t.run()

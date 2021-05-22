@@ -47,7 +47,6 @@ class CLITestCase(unittest.TestCase):
 
     def run(self):
         stdin = sys.stdin
-        self.commands.append("q\n")
         sys.stdin = io.StringIO("\n".join(self.commands))
         cli = CLI(self.infile, enable_rich=self.enable_rich)
         with io.StringIO() as buf, redirect_stdout(buf):
