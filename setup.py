@@ -38,7 +38,7 @@ setuptools.setup(
     python_requires=">=3.6",
     install_requires = [
         "dill>=0.3.3",
-        "rich>=10.1.0"
+        "rich>=10.2.1"
     ],
     entry_points={
         "console_scripts": [

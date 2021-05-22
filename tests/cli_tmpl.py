@@ -20,7 +20,12 @@ class CLITestCase(unittest.TestCase):
         self.enable_rich = enable_rich
 
     def command(self, cmd):
-        self.commands.append(cmd)
+        if isinstance(cmd, str):
+            self.commands.append(cmd)
+        elif isinstance(cmd, list):
+            self.commands.extend(cmd)
+        else:
+            self.fail(f"cmd: {cmd} is invalid")
 
     def _add_check(self, check):
         cmd_idx = len(self.commands)
@@ -37,9 +42,11 @@ class CLITestCase(unittest.TestCase):
     def check_true(self, func):
         self._add_check({"type": "true", "args": func})
 
+    def check_equal(self, func, val):
+        self._add_check({"type": "equal", "args": (func, val)})
+
     def run(self):
         stdin = sys.stdin
-        self.commands.append("q\n")
         sys.stdin = io.StringIO("\n".join(self.commands))
         cli = CLI(self.infile, enable_rich=self.enable_rich)
         with io.StringIO() as buf, redirect_stdout(buf):
@@ -62,6 +69,8 @@ class CLITestCase(unittest.TestCase):
             self.assertNotIn(check["args"], output)
         elif check["type"] == "true":
             self.assertTrue(check["args"](output))
+        elif check["type"] == "equal":
+            self.assertEqual(check["args"][0](output), check["args"][1])
         else:
             raise ValueError("Unknown Check!")
 
@@ -74,6 +83,12 @@ class CLITmpl(unittest.TestCase):
             elif cmd[0] == "psview":
                 cmd = ["coverage", "run", "--parallel-mode", "--pylib", "-m", "progshot.cli"] + cmd[1:]
 
+        return subprocess.Popen(
+            cmd,
+            stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
+            universal_newlines=True
+        )
+
     def generate_progshot(self, infile, coverage=None):
         if coverage is None:
             coverage = os.getenv("COVERAGE_RUN")
@@ -84,5 +99,5 @@ class CLITmpl(unittest.TestCase):
         result = subprocess.run(cmd, stdout=subprocess.PIPE, timeout=30)
         self.assertEqual(result.returncode, 0)
 
-    def create_test(self, infile, **kwargs):
+    def create_test(self, infile="out.pshot", **kwargs):
         return CLITestCase(infile, **kwargs)

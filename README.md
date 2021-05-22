@@ -42,6 +42,39 @@ def add(a, b):
 
 </details>
 
+### Trace
+
+To capture a continuous run and be able to offline debug it like a real debugger, use ``@trace``
+
+```python
+from progshot import trace
+
+@trace
+def f(a, b):
+    c = a + b
+    b = c * a
+    return c - b
+```
+
+``@trace`` will record every line executed in the decorated function and provide a debugger-like
+environment offline, where you can not only step forward, but go backward as well.
+
+By default, ``@trace`` is not recursive, but you can set the ``depth`` of ``@trace``
+
+```python
+from progshot import trace
+
+def g(n):
+    # this function will be recorded as well
+    return n * n
+
+@trace(depth=2)
+def f(a, b):
+    c = a + b
+    b = c * a
+    return g(c) + g(b)
+```
+
 ### View
 
 To view the report, you can use CLI or Web interface.
@@ -61,8 +94,12 @@ The CLI interface is similar to pdb. You can use commands that have the same mea
 * w(here) - show stack trace
 * u(p) [_count_] - move the current frame _count_ levels up (to older frame)
 * d(own) [_count_] - move the current frame _count_ levels down (to later frame)
-* n(ext) [_count_] - go to _count_ films(capture) after
-* b(ack) [_count_] - go to _count_ films(capture) before
+* n(ext) - go to next line in current function if possible, otherwise next film
+* b(ack) - go to previous line in current function if possible, otherwise previous film
+* s(tep) - go to next film
+* s(tep)b(ack) - go to previous film
+* r(eturn) - go to the next film when the current function returns
+* r(eturn)b(ack) - go to the previous film before the current function enters
 * g(oto) [_bookmark_] - goto _bookmark_ film. _bookmark_ can be film index or film name
 * l(ist) [_lineno_] - show source code around _lineno_
 * ll - show full source code of existing frame
