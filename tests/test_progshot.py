@@ -22,8 +22,15 @@ class TestProgShot(unittest.TestCase):
         self.assertEqual(ps._save_at_exit, True)
         ps.config(save_at_exit=False)
         self.assertEqual(ps._save_at_exit, False)
+        ps.config(save_at_exit=True)
+        self.assertEqual(ps._save_at_exit, True)
         with self.assertRaises(TypeError):
             ps.config(save_at_exit="False")
+
+        ps.config(depth=3)
+        self.assertEqual(ps._trace_config["depth"], 3)
+        with self.assertRaises(ValueError):
+            ps.config(depth="lol")
 
 
 class TestProgshotCLI(CLITmpl):

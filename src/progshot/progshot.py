@@ -96,9 +96,10 @@ class ProgShot:
 
             @functools.wraps(func)
             def wrapper(*args, **kwargs):
+                prev_trace_func = sys.gettrace()
                 sys.settrace(TraceFunc(self.capture, depth, outer=outer))
                 ret = func(*args, **kwargs)
-                sys.settrace(None)
+                sys.settrace(prev_trace_func)
                 return ret
 
             return wrapper

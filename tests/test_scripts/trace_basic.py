@@ -15,5 +15,12 @@ def func_g(i):
         func_f(i)
 
 
+@trace
+def func_h():
+    a = 4
+    return a
+
+
 for i in range(5):
     func_g(i)
+func_h()

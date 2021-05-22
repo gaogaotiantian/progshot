@@ -21,6 +21,12 @@ class TestPSVIewerBasic(CLITmpl):
         t.check_in("def func_f(i)")
         t.run()
 
+    def test_list(self):
+        t = self.create_test()
+        t.command("l")
+        t.check_in("func_f")
+        t.check_not_in("func_g")
+
     def test_step(self):
         t = self.create_test("out.pshot")
         t.command("s")
@@ -114,7 +120,7 @@ class TestPSVIewerBasic(CLITmpl):
         self.assertIn("Traceback", out)
 
 
-class TestPSVIewerTrace(CLITmpl):
+class TestPSViewerTrace(CLITmpl):
     @classmethod
     def setUpClass(cls):
         cls.test_dir = os.path.dirname(__file__)
@@ -189,3 +195,32 @@ class TestPSVIewerTrace(CLITmpl):
         t.command("n")
         t.command("p _")
         t.check_in("0")
+
+
+class TestPSViewerInvalid(CLITmpl):
+    @classmethod
+    def setUpClass(cls):
+        cls.test_dir = os.path.dirname(__file__)
+        cls().generate_progshot(os.path.join(cls.test_dir, "test_scripts", "trace_basic.py"), coverage=False)
+
+    @classmethod
+    def tearDownClass(cls):
+        os.remove("out.pshot")
+
+    def test_film_out_of_range(self):
+        t = self.create_test()
+        t.command("b")
+        t.check_in("out of range")
+        t.command("rb")
+        t.check_in("out of range")
+        t.command("sb")
+        t.check_in("out of range")
+        t.command(["d" for _ in range(5)])
+        t.check_in("newest")
+        t.command("g -1")
+        t.command("n")
+        t.check_in("out of range")
+        t.command("r")
+        t.check_in("out of range")
+        t.command("s")
+        t.check_in("out of range")

@@ -20,7 +20,12 @@ class CLITestCase(unittest.TestCase):
         self.enable_rich = enable_rich
 
     def command(self, cmd):
-        self.commands.append(cmd)
+        if isinstance(cmd, str):
+            self.commands.append(cmd)
+        elif isinstance(cmd, list):
+            self.commands.extend(cmd)
+        else:
+            self.fail(f"cmd: {cmd} is invalid")
 
     def _add_check(self, check):
         cmd_idx = len(self.commands)
@@ -95,5 +100,5 @@ class CLITmpl(unittest.TestCase):
         result = subprocess.run(cmd, stdout=subprocess.PIPE, timeout=30)
         self.assertEqual(result.returncode, 0)
 
-    def create_test(self, infile, **kwargs):
+    def create_test(self, infile="out.pshot", **kwargs):
         return CLITestCase(infile, **kwargs)
