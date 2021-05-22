@@ -26,7 +26,6 @@ class TestPSVIewerBasic(CLITmpl):
         t = self.create_test()
         t.command("l")
         t.check_in("func_f")
-        t.check_not_in("func_g")
         t.run()
 
     def test_step(self):
