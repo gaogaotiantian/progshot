@@ -19,12 +19,9 @@ class Frame:
             if m and hasattr(m, "__package__") and m.__package__ == "progshot":
                 # Skip the variable if it's in progshot
                 continue
-            try:
-                if dill.pickles(val):
-                    self.locals[key] = val
-                else:
-                    self.locals[key] = UnPickleable()
-            except Exception:
+            if dill.pickles(val):
+                self.locals[key] = val
+            else:
                 self.locals[key] = UnPickleable()
 
         self.frame_id = id(frame)

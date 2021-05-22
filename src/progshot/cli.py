@@ -297,11 +297,14 @@ class CLI:
         self._show_curr_frame()
     do_rb = do_returnback
 
-    @check_args(str, 1)
+    @check_args(str, None)
     def do_goto(self, bookmark):
         """
         bookmark could be a string for name or an 1-index
         """
+        if bookmark is None:
+            self.info("Usage: g <film index or film name>")
+            return
         try:
             bookmark = int(bookmark)
             if bookmark >= 1:

@@ -5,6 +5,7 @@
 import inspect
 import progshot
 from progshot.progshot import TraceFunc
+import sys
 import unittest
 
 
@@ -25,3 +26,22 @@ class TestTraceFunc(unittest.TestCase):
         tf(frame, "line", None)
         tf(frame, "return", None)
         self.assertEqual(len(p._films), 3)
+
+    def test_with_profile(self):
+        # It's hard to get coverage for trace function inside progshot
+        # because normally it's triggered by settrace, which is used
+        # by coverage.py for coverage stat. However, we can use setprofile
+        # to simulate the process and get some coverage
+        def stub():
+            pass
+
+        p = progshot.ProgShot(save_at_exit=False)
+        tf = TraceFunc(capture=p.capture, depth=2, outer=0)
+        sys.setprofile(tf)
+        # Trigger the trace function
+        p.config(save_at_exit=False)
+        # sanity check for setprofile
+        stub()
+        sys.setprofile(None)
+        # call to stub will not be captured, only return
+        self.assertEqual(len(p._films), 1)

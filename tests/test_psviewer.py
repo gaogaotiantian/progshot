@@ -78,6 +78,8 @@ class TestPSVIewerBasic(CLITmpl):
         t.check_in("1")
         t.command("goto Film-4")
         t.check_in("3")
+        t.command("g")
+        t.check_in("Usage")
         t.run()
 
     def test_where(self):
@@ -224,3 +226,14 @@ class TestPSViewerInvalid(CLITmpl):
         t.check_in("out of range")
         t.command("s")
         t.check_in("out of range")
+        t.run()
+
+    def test_invalid_args(self):
+        t = self.create_test()
+        t.command("w 1")
+        t.check_in("Error")
+        t.command("d 15 15")
+        t.check_in("Error")
+        t.command("d lol")
+        t.check_in("Error")
+        t.run()

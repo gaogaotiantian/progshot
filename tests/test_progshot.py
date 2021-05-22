@@ -4,6 +4,7 @@
 
 import os
 import progshot
+import tempfile
 import unittest
 from .cli_tmpl import CLITmpl
 
@@ -31,6 +32,14 @@ class TestProgShot(unittest.TestCase):
         self.assertEqual(ps._trace_config["depth"], 3)
         with self.assertRaises(ValueError):
             ps.config(depth="lol")
+
+    def test_dump(self):
+        ps = progshot.ProgShot(save_at_exit=False)
+        ps.capture()
+        with tempfile.NamedTemporaryFile(mode="w", suffix=".pshot", delete=False) as f:
+            ps.dump(f.name)
+        self.assertTrue(os.path.exists(f.name))
+        os.remove(f.name)
 
 
 class TestProgshotCLI(CLITmpl):
