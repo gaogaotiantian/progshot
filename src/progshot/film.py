@@ -32,6 +32,11 @@ class Frame:
         self.co_name = frame.f_code.co_name
 
 
+# key: (co_filename, co_first_lineno)
+# val: (start_lineno, len(code))
+source_file_cache = {}
+
+
 class Film:
     """
     A film contains information of the whole program at a specific point
@@ -53,22 +58,35 @@ class Film:
     def load_from_frames(self, frames):
         self.sources = set()
         for f_info in frames:
-            m = inspect.getmodule(f_info.frame)
+            frame = f_info.frame
+            m = inspect.getmodule(frame)
             if m and hasattr(m, "__package__") and m.__package__ == "progshot":
                 # Skip the frame if it's in progshot
                 continue
             filename = os.path.abspath(f_info.filename)
-            lines, start_lineno = inspect.getsourcelines(f_info.frame)
-            if start_lineno == 0:
-                # If the frame is a module, getsourcelines return 0 as
-                # start lineno. However this does not conform to what
-                # we expect. We make it 1 to be compatible
-                start_lineno = 1
+            cached_data = source_file_cache.get((frame.f_code.co_filename, frame.f_code.co_firstlineno), None)
+            if cached_data is None:
+                try:
+                    lines, start_lineno = inspect.getsourcelines(f_info.frame)
+                    if start_lineno == 0:
+                        # If the frame is a module, getsourcelines return 0 as
+                        # start lineno. However this does not conform to what
+                        # we expect. We make it 1 to be compatible
+                        start_lineno = 1
+                    frame_lines = len(lines)
+                except OSError:
+                    # If we can't get source, use start_lineno = -1 as indicator
+                    start_lineno = -1
+                    frame_lines = 0
+                source_file_cache[(frame.f_code.co_filename, frame.f_code.co_firstlineno)] = (start_lineno, frame_lines)
+            else:
+                start_lineno, frame_lines = cached_data
+
             self.frames.append(Frame(
                 frame=f_info.frame,
                 filename=filename,
                 start_lineno=start_lineno,
-                frame_lines=len(lines),
+                frame_lines=frame_lines,
                 curr_lineno=f_info.lineno
             ))
             self.sources.add(filename)
@@ -82,4 +100,4 @@ class Film:
         return dill.dumps({
             "frames": self.frames,
             "name": self.name
-        })
+        }, byref=True)
