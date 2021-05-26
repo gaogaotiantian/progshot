@@ -151,10 +151,12 @@ class CLI:
         If allow_same is True, switch to the same frame if possible.
         If allow_same is False, switch to the parent frame (return)
 
-        if until_line is not None, go until current line number >= until_line
+        if until_line is not None, go until
+            current line number >= until_line if not backward or
+            current line number <= until_line if backward
         or return from the current frame
 
-        This is used for n/b/r/rb/un/unb
+        This is used for n/b/r/rb/unt/untb
         If such film does not exist, switch to +1/-1
         """
         if backward:
