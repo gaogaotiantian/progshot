@@ -18,6 +18,12 @@ class TestProgShot(unittest.TestCase):
         self.assertTrue(os.stat("test.pshot").st_size > 0)
         os.remove("test.pshot")
 
+    def test_capture_without_file(self):
+        ps = progshot.ProgShot(save_at_exit=False)
+        # We use a lambda here to trigger capture without filename
+        _ = max([1, 2, 3], key=lambda _: ps.capture() or 1)
+        self.assertEqual(len(ps._films), 3)
+
     def test_config(self):
         ps = progshot.ProgShot()
         self.assertEqual(ps._save_at_exit, True)
