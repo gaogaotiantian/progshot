@@ -202,6 +202,38 @@ class TestPSViewerTrace(CLITmpl):
         t.check_in("0")
         t.run()
 
+    def test_until(self):
+        t = self.create_test("out.pshot")
+        t.command("s")
+        t.command("s")
+        t.command("unt")
+        t.command("p a")
+        t.check_in("3")
+        t.command("unt 9")
+        t.command("p b")
+        t.check_in("c")
+        t.command("unt 100")
+        t.command("ll")
+        t.check_in("func_g")
+        t.run()
+
+    def test_untilback(self):
+        t = self.create_test("out.pshot")
+        t.command("s")
+        t.command("s")
+        t.command("unt 9")
+        t.command("untb")
+        t.command("untb")
+        t.command("p c")
+        t.check_in("NameError")
+        t.command("untb 6")
+        t.command("p b")
+        t.check_in("NameError")
+        t.command("untb 1")
+        t.command("ll")
+        t.check_in("func_g")
+        t.run()
+
 
 class TestPSViewerInvalid(CLITmpl):
     @classmethod
@@ -221,6 +253,8 @@ class TestPSViewerInvalid(CLITmpl):
         t.check_in("out of range")
         t.command("sb")
         t.check_in("out of range")
+        t.command("untb")
+        t.check_in("out of range")
         t.command(["d" for _ in range(5)])
         t.check_in("newest")
         t.command("g -1")
@@ -229,6 +263,8 @@ class TestPSViewerInvalid(CLITmpl):
         t.command("r")
         t.check_in("out of range")
         t.command("s")
+        t.check_in("out of range")
+        t.command("unt")
         t.check_in("out of range")
         t.command("g 1000")
         t.check_in("out of range")

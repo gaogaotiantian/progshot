@@ -143,7 +143,7 @@ class CLI:
                 return self._switch_film(idx)
         return False
 
-    def _switch_film_frame(self, backward=False, allow_same=True):
+    def _switch_film_frame(self, backward=False, allow_same=True, until_line=None):
         """
         Switch to the next or previous film that is not the children of
         current film.
@@ -151,7 +151,12 @@ class CLI:
         If allow_same is True, switch to the same frame if possible.
         If allow_same is False, switch to the parent frame (return)
 
-        This is used for n/b/r/rb
+        if until_line is not None, go until
+            current line number >= until_line if not backward or
+            current line number <= until_line if backward
+        or return from the current frame
+
+        This is used for n/b/r/rb/unt/untb
         If such film does not exist, switch to +1/-1
         """
         if backward:
@@ -160,8 +165,19 @@ class CLI:
             step = 1
         film_idx = self.curr_film_idx + step
         while self._is_valid_film_idx(film_idx):
-            if not self._is_child_or_sibling_film(self.films[film_idx], allow_sibling=not allow_same):
-                break
+            if until_line is not None:
+                assert(allow_same)
+                # If it's out of the frame, then we are done
+                if not self._is_child_or_sibling_film(self.films[film_idx], allow_sibling=True):
+                    break
+                # If it's in the same frame, and reached the until_line, we are done
+                if not self._is_child_or_sibling_film(self.films[film_idx], allow_sibling=False):
+                    if (backward and self.films[film_idx].frames[0].curr_lineno <= until_line) or \
+                            (not backward and self.films[film_idx].frames[0].curr_lineno >= until_line):
+                        break
+            else:
+                if not self._is_child_or_sibling_film(self.films[film_idx], allow_sibling=not allow_same):
+                    break
             film_idx += step
 
         return self._switch_film(film_idx)
@@ -296,6 +312,28 @@ class CLI:
             return
         self._show_curr_frame()
     do_rb = do_returnback
+
+    @check_args(int, None)
+    def do_until(self, until_line):
+        if until_line is None:
+            until_line = self.curr_film.frames[0].curr_lineno + 1
+
+        if not self._switch_film_frame(until_line=until_line):
+            self.error("Target film is out of range")
+            return
+        self._show_curr_frame()
+    do_unt = do_until
+
+    @check_args(int, None)
+    def do_untilback(self, until_line):
+        if until_line is None:
+            until_line = self.curr_film.frames[0].curr_lineno - 1
+
+        if not self._switch_film_frame(backward=True, until_line=until_line):
+            self.error("Target film is out of range")
+            return
+        self._show_curr_frame()
+    do_untb = do_untilback
 
     @check_args(str, None)
     def do_goto(self, bookmark):
