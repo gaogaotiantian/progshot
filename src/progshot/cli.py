@@ -316,7 +316,7 @@ class CLI:
     @check_args(int, None)
     def do_until(self, until_line):
         if until_line is None:
-            until_line = self.curr_film.frames[-1].curr_lineno + 1
+            until_line = self.curr_film.frames[0].curr_lineno + 1
 
         if not self._switch_film_frame(until_line=until_line):
             self.error("Target film is out of range")
@@ -327,7 +327,7 @@ class CLI:
     @check_args(int, None)
     def do_untilback(self, until_line):
         if until_line is None:
-            until_line = self.curr_film.frames[-1].curr_lineno - 1
+            until_line = self.curr_film.frames[0].curr_lineno - 1
 
         if not self._switch_film_frame(backward=True, until_line=until_line):
             self.error("Target film is out of range")
