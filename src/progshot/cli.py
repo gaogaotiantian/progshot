@@ -170,8 +170,8 @@ class CLI:
                     break
                 # If it's in the same frame, and reached the until_line, we are done
                 if not self._is_child_or_sibling_film(self.films[film_idx], allow_sibling=False):
-                    if (backward and self.films[film_idx].frames[-1].curr_lineno <= until_line) or \
-                            (not backward and self.films[film_idx].frames[-1].curr_lineno >= until_line):
+                    if (backward and self.films[film_idx].frames[0].curr_lineno <= until_line) or \
+                            (not backward and self.films[film_idx].frames[0].curr_lineno >= until_line):
                         break
             else:
                 if not self._is_child_or_sibling_film(self.films[film_idx], allow_sibling=not allow_same):

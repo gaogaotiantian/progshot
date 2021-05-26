@@ -202,6 +202,31 @@ class TestPSViewerTrace(CLITmpl):
         t.check_in("0")
         t.run()
 
+    def test_until(self):
+        t = self.create_test("out.pshot")
+        t.command("s")
+        t.command("s")
+        t.command("unt 9")
+        t.command("p b")
+        t.check_in("c")
+        t.command("unt 100")
+        t.command("ll")
+        t.check_in("func_g")
+        t.run()
+
+    def test_untilback(self):
+        t = self.create_test("out.pshot")
+        t.command("s")
+        t.command("s")
+        t.command("unt 9")
+        t.command("untb 6")
+        t.command("p b")
+        t.check_in("NameError")
+        t.command("untb 1")
+        t.command("ll")
+        t.check_in("func_g")
+        t.run()
+
 
 class TestPSViewerInvalid(CLITmpl):
     @classmethod
