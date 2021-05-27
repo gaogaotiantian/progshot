@@ -285,3 +285,25 @@ class TestPSViewerInvalid(CLITmpl):
         t.command("")
         t.check_true(lambda s: len(s) < 3)
         t.run()
+
+
+class TestPSViewerClass(CLITmpl):
+    @classmethod
+    def setUpClass(cls):
+        cls.test_dir = os.path.dirname(__file__)
+        cls().generate_progshot(os.path.join(cls.test_dir, "test_scripts", "trace_class.py"), coverage=False)
+
+    @classmethod
+    def tearDownClass(cls):
+        os.remove("out.pshot")
+
+    def test_pprint(self):
+        t = self.create_test("out.pshot")
+        t.command("n")
+        t.command("pp a")
+        t.check_in(["Data", "a", "b", "c"])
+        t.command("pp")
+        t.check_in("Usage")
+        t.command("pp d")
+        t.check_in("NameError")
+        t.run()

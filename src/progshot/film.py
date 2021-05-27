@@ -100,4 +100,4 @@ class Film:
         return dill.dumps({
             "frames": self.frames,
             "name": self.name
-        }, byref=True)
+        })

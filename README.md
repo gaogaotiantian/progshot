@@ -90,7 +90,8 @@ The CLI interface is similar to pdb. You can use commands that have the same mea
 <details>
 <summary>psview commands</summary>
 
-* p _expression_ - print evaluate of expression
+* p _expression_ - print eval of expression
+* pp _expression_ - pretty print eval of expression with `objprint`
 * w(here) - show stack trace
 * u(p) [_count_] - move the current frame _count_ levels up (to older frame)
 * d(own) [_count_] - move the current frame _count_ levels down (to later frame)
@@ -100,6 +101,8 @@ The CLI interface is similar to pdb. You can use commands that have the same mea
 * s(tep)b(ack) - go to previous film
 * r(eturn) - go to the next film when the current function returns
 * r(eturn)b(ack) - go to the previous film before the current function enters
+* unt(il) [_lineno_] - go forward until the line with a number that's >= _lineno_ is reached
+* unt(il)b(ack) [_lineno_] - go backward until the line with a number that's <= _lineno_ is reached
 * g(oto) [_bookmark_] - goto _bookmark_ film. _bookmark_ can be film index or film name
 * l(ist) [_lineno_] - show source code around _lineno_
 * ll - show full source code of existing frame
