@@ -4,6 +4,7 @@
 
 import argparse
 import functools
+import objprint
 from rich.console import Console
 from rich.syntax import Syntax
 import sys
@@ -61,6 +62,7 @@ class CLI:
         self.enable_rich = enable_rich
         self.console = Console()
         self.films_count = len(self.viewer.films)
+        objprint.config(color=False, depth=6)
         self._switch_film(0)
 
     @property
@@ -381,6 +383,16 @@ class CLI:
         except Exception as e:
             self.info("".join(traceback.format_exception_only(type(e), e)), end="")
     do_p = do_print
+
+    @check_args(str, None)
+    def do_pprint(self, val):
+        if val is None:
+            self.info("Usage: pp <arg>")
+        try:
+            self.message(objprint.objstr(self._get_val(val)))
+        except Exception as e:
+            self.info("".join(traceback.format_exception_only(type(e), e)), end="")
+    do_pp = do_pprint
 
     def do_quit(self, args):
         return True

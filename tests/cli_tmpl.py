@@ -64,9 +64,17 @@ class CLITestCase(unittest.TestCase):
 
     def do_check(self, output, check):
         if check["type"] == "in":
-            self.assertIn(check["args"], output)
+            if isinstance(check["args"], str):
+                self.assertIn(check["args"], output)
+            elif isinstance(check["args"], list) or isinstance(check["args"], tuple):
+                for arg in check["args"]:
+                    self.assertIn(arg, output)
         elif check["type"] == "notin":
-            self.assertNotIn(check["args"], output)
+            if isinstance(check["args"], str):
+                self.assertNotIn(check["args"], output)
+            elif isinstance(check["args"], list) or isinstance(check["args"], tuple):
+                for arg in check["args"]:
+                    self.assertNotIn(arg, output)
         elif check["type"] == "true":
             self.assertTrue(check["args"](output))
         elif check["type"] == "equal":
