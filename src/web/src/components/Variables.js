@@ -11,12 +11,14 @@ const Variables = ({currSource}) => {
     })
 
     return (
-        <pre className="variables">
-           <code className="language-py">{currSource.locals}</code>
-        </pre>
-        // <pre>
-        //     <code className="language-py"></code>
-        // </pre>
+        <div className="section">
+            <div className="grid">
+                <div className="section-title">Variables</div>
+                <pre className="variables">
+                    <code className="language-py">{currSource.locals}</code>
+                </pre>
+            </div>
+        </div>
     )
 }
 
