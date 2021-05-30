@@ -16,17 +16,22 @@ const Terminal = ({sendCommand, addToConsoleHistory, consoleHistory, consoleOutp
         if (event.key === 'Enter') {
             addToConsoleHistory(command + "\n", false)
             if (command !== "") {
-                sendCommand(command, true)
+                sendCommand(command, "console")
             }
             setCommand("")
         }
     }
 
     return (
-        <pre className="command-line terminal" data-host="psviewer" data-output={consoleOutputLines}>
-            <code className="language-py">{consoleHistory}</code>
-            <input type="text" id="input" value={command} onChange={(e) => {setCommand(e.target.value)}} onKeyDown={(e) => handleKeyDown(e)}/>
-        </pre>
+        <div className="section">
+            <div className="grid">
+                <div className="section-title">Terminal</div>
+                    <pre className="command-line terminal" data-host="psviewer" data-output={consoleOutputLines}>
+                        <code className="language-py">{consoleHistory}</code>
+                        <input className="mono-word terminal-input" type="text" id="input" value={command} onChange={(e) => {setCommand(e.target.value)}} onKeyDown={(e) => handleKeyDown(e)}/>
+                    </pre>
+            </div>
+        </div>
     )
 }
 

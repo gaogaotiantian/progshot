@@ -99,6 +99,13 @@ class CLI:
         else:
             return finish
 
+    def _switch_frame(self, frame_idx):
+        if 0 <= frame_idx < len(self.curr_film.frames):
+            self.curr_frame_idx = frame_idx
+            self.curr_frame = self.curr_film.frames[self.curr_frame_idx]
+            return True
+        return False
+
     def _switch_film(self, film_idx):
         # If it's a negative index, make it positive
         if -self.films_count <= film_idx < 0:
@@ -246,6 +253,17 @@ class CLI:
                 self.message(f"  {file_string}")
             self.message(f"  > {code_string.strip()}")
     do_w = do_where
+
+    @check_args(int, 1)
+    def do_jump(self, targetFrame):
+        """
+        targetFrame is an 1-index
+        """
+        if not self._switch_frame(targetFrame - 1):
+            self.error("target frame is out of range")
+            return
+        self._show_curr_frame()
+    do_j = do_jump
 
     @check_args(str, None)
     def do_print(self, val):
