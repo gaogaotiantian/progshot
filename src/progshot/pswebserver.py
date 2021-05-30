@@ -19,6 +19,7 @@ class ProgShotWebServer:
             await websocket.send(json.dumps(response))
 
     def parse_request(self, req):
+        print(req)
         res = {}
         if req["type"] == "init":
             res = {
@@ -38,6 +39,8 @@ class ProgShotWebServer:
                 "source": self.web_interface.get_source(),
                 "stack": self.web_interface.get_stack()
             }
+            print(self.web_interface.curr_frame_idx)
+            print(res)
         return res
 
     def exe_command(self, command):

@@ -5,21 +5,23 @@ import '../App.css';
 import 'prismjs/components/prism-python'
 import 'prismjs/plugins/line-numbers/prism-line-numbers'
 import 'prismjs/plugins/line-highlight/prism-line-highlight'
+import SourceTitle from './SourceTitle.js'
 
 Prism.manual = true;
-const Source = ({currSource}) => {
+const Source = ({currSource, currFilm, setCurrFilm, sendCommand}) => {
     useEffect(() => {
         Prism.highlightAll();
     })
 
-    console.log(currSource.code)
     return (
-        <pre className="line-numbers source" data-line={currSource.curr_lineno}>
-           <code className="language-py">{currSource.code}</code>
-        </pre>
-        // <pre>
-        //     <code className="language-py"></code>
-        // </pre>
+        <div className="section">
+            <div className="source-grid">
+                <SourceTitle filmInfo={currSource.film} currFilm={currFilm} setCurrFilm={setCurrFilm} sendCommand={sendCommand}/>
+                <pre className="line-numbers source" data-line={currSource.curr_lineno}>
+                    <code className="language-py">{currSource.code}</code>
+                </pre>
+            </div>
+        </div>
     )
 }
 

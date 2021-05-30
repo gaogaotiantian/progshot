@@ -8,9 +8,16 @@ class WebInterface(CLI):
 
     def get_source(self):
         code = self.viewer.get_source(self.curr_frame.filename)
-        return {"code": code,
-                "curr_lineno": self.curr_frame.curr_lineno,
-                "locals": self.get_locals()}
+        return {
+            "code": code,
+            "curr_lineno": self.curr_frame.curr_lineno,
+            "locals": self.get_locals(),
+            "film": {
+                "name": self.curr_film.name,
+                "num_films": self.films_count,
+                "curr_film_idx": self.curr_film_idx
+            }
+        }
 
     def get_locals(self):
         res = ""
@@ -19,8 +26,22 @@ class WebInterface(CLI):
         return res
 
     def get_stack(self):
-        self.parse_cmd("w")
-        return self.get_output()
+        res = []
+        for i in range(len(self.curr_film.frames) - 1, -1, -1):
+            frame = self.curr_film.frames[i]
+            info = {
+                "idx": i + 1,
+                "file_string": f"{frame.filename}({frame.curr_lineno}):{frame.co_name}",
+                "code_string": self.viewer.get_source_line(
+                    frame.filename,
+                    frame.curr_lineno
+                ).strip()
+            }
+            res.append(info)
+        return {
+            "stack": res,
+            "curr": self.curr_frame_idx + 1
+        }
 
     def get_output(self):
         return self.output
