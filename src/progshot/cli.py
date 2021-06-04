@@ -231,7 +231,7 @@ class CLI:
             print(s)
 
     def _do_default(self, args):
-        self.info(f"unknown syntax {args}")
+        self.info(f"Unknown syntax {args}")
         return False
 
     def _get_val(self, val):
