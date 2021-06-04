@@ -82,7 +82,7 @@ def web_server_main():
     frontEnd = threading.Thread(target=start_frontend, daemon=True)
     frontEnd.start()
     if not options.server_only:
-        webbrowser.open_new_tab(f'http://127.0.0.1:{FRONTENDPORT}')
+        webbrowser.open_new_tab(f'http://{HOSTNAME}:{FRONTENDPORT}')
     web_interface = WebInterface(f)
     web_server = ProgShotWebServer(web_interface)
     print("server is running at localhost:8000")

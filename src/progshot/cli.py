@@ -382,15 +382,14 @@ class CLI:
     do_w = do_where
 
     @check_args(int, 1)
-    def do_jump(self, targetFrame):
+    def do_frame(self, frame_idx):
         """
         targetFrame is an 1-index
         """
-        if not self._switch_frame(targetFrame - 1):
+        if not self._switch_frame(frame_idx - 1):
             self.error("target frame is out of range")
             return
         self._show_curr_frame()
-    do_j = do_jump
 
     @check_args(str, None)
     def do_print(self, val):

@@ -18,7 +18,7 @@ class TestWebInterface(unittest.TestCase):
     def setUp(self):
         coverage = os.getenv("COVERAGE_RUN")
         if coverage:
-            cmd = ["coverage", "run", "--parallel-mode", "-m", "progshot.pswebserver", "--server_only", "out.pshot"]
+            cmd = ["coverage", "run", "--parallel-mode", "-m", "--pylib", "progshot.pswebserver", "--server_only", "out.pshot"]
         else:
             cmd = ["pswebserver", "--server_only", "out.pshot"]
         self.server = subprocess.Popen(cmd)

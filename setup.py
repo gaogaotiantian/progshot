@@ -47,7 +47,8 @@ setuptools.setup(
     install_requires = [
         "dill>=0.3.3",
         "rich>=10.2.1",
-        "objprint>=0.1.0"
+        "objprint>=0.1.0",
+        "websockets>=9.1"
     ],
     entry_points={
         "console_scripts": [
