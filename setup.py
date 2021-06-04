@@ -25,6 +25,14 @@ setuptools.setup(
     url="https://github.com/gaogaotiantian/progshot",
     packages=setuptools.find_packages("src"),
     package_dir={"":"src"},
+    package_data={
+        "progshot": [
+            "frontend/*",
+            "frontend/static/*",
+            "frontend/static/css/*",
+            "frontend/static/js/*",
+        ]
+    },
     classifiers=[
         "Development Status :: 3 - Alpha",
         "Programming Language :: Python :: 3.6",

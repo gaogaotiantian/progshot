@@ -1,5 +1,5 @@
 import Prism from "prismjs"
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import "../prism.css";
 import '../App.css';
 import 'prismjs/components/prism-python'
@@ -7,9 +7,10 @@ import 'prismjs/plugins/command-line/prism-command-line'
 
 const Terminal = ({sendCommand, addToConsoleHistory, consoleHistory, consoleOutputLines}) => {
     const [command, setCommand] = useState("")
+    const terminal = useRef(null)
 
     useEffect(() => {
-        Prism.highlightAll();
+        Prism.highlightAllUnder(terminal.current);
     })
 
     const handleKeyDown = async (event) => {
@@ -24,12 +25,12 @@ const Terminal = ({sendCommand, addToConsoleHistory, consoleHistory, consoleOutp
 
     return (
         <div className="section">
-            <div className="grid">
-                <div className="section-title">Terminal</div>
-                    <pre className="command-line terminal" data-host="psviewer" data-output={consoleOutputLines}>
-                        <code className="language-py">{consoleHistory}</code>
-                        <input className="mono-word terminal-input" type="text" id="input" value={command} onChange={(e) => {setCommand(e.target.value)}} onKeyDown={(e) => handleKeyDown(e)}/>
-                    </pre>
+            <div className="section-title">Terminal</div>
+            <div className="scrollable">
+                <pre className="command-line terminal" ref={terminal} data-host="psviewer" data-output={consoleOutputLines}>
+                    <code className="language-py">{consoleHistory}</code>
+                    <input className="mono-word terminal-input" type="text" id="input" value={command} onChange={(e) => {setCommand(e.target.value)}} onKeyDown={(e) => handleKeyDown(e)}/>
+                </pre>
             </div>
         </div>
     )

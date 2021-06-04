@@ -10,8 +10,30 @@ import Source from './components/Source'
 import Terminal from './components/Terminal'
 import Variables from './components/Variables'
 import Stack from './components/Stack'
+import Prism from "prismjs"
 
 const client = new WebSocket('ws://localhost:8080')
+
+Prism.hooks.add('complete', (env) => {
+  if (env.element.className.includes("source-code") && env.code !== '') {
+    var lines = document.querySelector('.line-highlight')
+    var linesHeight = lines.offsetHeight
+    var pre = document.getElementById("source-code")
+    var preHeight = pre.offsetHeight;
+
+    lines.scrollIntoView(false);
+
+    if (preHeight > linesHeight && pre.scrollTop <= (pre.scrollHeight - preHeight)) {
+        // var calculated = pre.scrollTop - (preHeight / 2) + (linesHeight / 2)
+        // pre.scrollTop = calculated >= 0 ? calculated : pre.scrollTop;
+        if (lines.offsetTop > preHeight) {
+          pre.scrollTop += preHeight / 2;
+        } else {
+          pre.scrollTop += lines.offsetTop - preHeight / 2;
+        }
+    }
+  }
+})
 
 function App() {
   const [currSource, setCurrSource] = useState({
@@ -50,6 +72,7 @@ function App() {
     }
     if (dataFromServer.hasOwnProperty("stack")) {
       setStack(dataFromServer.stack)
+      console.log(stack)
     }
   }
 

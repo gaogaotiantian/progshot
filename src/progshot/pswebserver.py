@@ -1,11 +1,19 @@
+import argparse
 import asyncio
-import websockets
+import http.server
 import json
+import os
+import socketserver
 import sys
+import threading
+import webbrowser
+import websockets
 from .webinterface import WebInterface
 
-hostName = "localhost"
-serverPort = 8080
+HOSTNAME = "localhost"
+SERVERPORT = 8080
+FRONTENDPORT = 8000
+DIRECTORY = os.path.join(os.path.dirname(__file__), "frontend")
 
 
 class ProgShotWebServer:
@@ -19,7 +27,6 @@ class ProgShotWebServer:
             await websocket.send(json.dumps(response))
 
     def parse_request(self, req):
-        print(req)
         res = {}
         if req["type"] == "init":
             res = {
@@ -39,27 +46,47 @@ class ProgShotWebServer:
                 "source": self.web_interface.get_source(),
                 "stack": self.web_interface.get_stack()
             }
-            print(self.web_interface.curr_frame_idx)
-            print(res)
         return res
 
-    def exe_command(self, command):
-        self.web_interface.parse_cmd(command)
-        return {
-            "console": self.web_interface.get_output(),
-            "source": self.web_interface.get_source()
-        }
+
+class Handler(http.server.SimpleHTTPRequestHandler):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, directory=DIRECTORY, **kwargs)
+
+    def log_message(self, format, *args):
+        pass
+
+
+async def async_main(web_server):
+    stop = asyncio.get_event_loop().create_future()
+    import signal
+    asyncio.get_event_loop().add_signal_handler(signal.SIGTERM, stop.set_result, None)
+    asyncio.get_event_loop().add_signal_handler(signal.SIGINT, stop.set_result, None)
+    async with websockets.serve(web_server.communication, HOSTNAME, SERVERPORT):
+        await stop
+
+
+def start_frontend():
+    socketserver.TCPServer.allow_reuse_address = True
+    with socketserver.TCPServer(("", FRONTENDPORT), Handler) as httpd:
+        httpd.serve_forever()
 
 
 def web_server_main():
-    if len(sys.argv) != 2:
-        print("Need one argument!", file=sys.stderr)
-        exit(1)
-    web_interface = WebInterface(sys.argv[1])
+    parser = argparse.ArgumentParser()
+    parser.add_argument("file", nargs=1, help="pshot file to open")
+    parser.add_argument("--server_only", "-s", default=False, action="store_true",
+                        help="Only start the server, do not open webpage")
+    options = parser.parse_args(sys.argv[1:])
+    f = options.file[0]
+    frontEnd = threading.Thread(target=start_frontend, daemon=True)
+    frontEnd.start()
+    if not options.server_only:
+        webbrowser.open_new_tab(f'http://127.0.0.1:{FRONTENDPORT}')
+    web_interface = WebInterface(f)
     web_server = ProgShotWebServer(web_interface)
-    start_server = websockets.serve(web_server.communication, hostName, serverPort)
-    asyncio.get_event_loop().run_until_complete(start_server)
-    asyncio.get_event_loop().run_forever()
+    print("server is running at localhost:8000")
+    asyncio.run(async_main(web_server))
 
 
 if __name__ == "__main__":

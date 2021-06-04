@@ -6,20 +6,16 @@ import 'prismjs/components/prism-python'
 import StackElement from './StackElement.js'
 
 const Stack = ({stack, sendCommand}) => {
-    useEffect(() => {
-        Prism.highlightAll();
-    })
-
     console.log(stack)
     return (
         <div className="section">
-            <div className="grid">
-                <div className="section-title">Stack</div>
-                    <div className="stack">
-                        {stack.stack.map((ele) => {
-                            return <StackElement key={ele.idx} active={stack.curr} info={ele} sendCommand={sendCommand}/>
-                        })}
-                    </div>
+            <div className="section-title">Stack</div>
+            <div className="scrollable">
+                <div className="stack">
+                    {stack.stack.map((ele) => {
+                        return <StackElement key={ele.idx} active={stack.curr} info={ele} sendCommand={sendCommand}/>
+                    })}
+                </div>
             </div>
         </div>
     )

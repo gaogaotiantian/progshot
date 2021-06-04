@@ -1,5 +1,5 @@
 import Prism from "prismjs"
-import { useEffect } from "react";
+import { useEffect, useRef} from "react";
 import "../prism.css";
 import '../App.css';
 import 'prismjs/components/prism-python'
@@ -9,16 +9,17 @@ import SourceTitle from './SourceTitle.js'
 
 Prism.manual = true;
 const Source = ({currSource, currFilm, setCurrFilm, sendCommand}) => {
+    const code = useRef(null);
     useEffect(() => {
-        Prism.highlightAll();
+        Prism.highlightAllUnder(code.current);
     })
 
     return (
         <div className="section">
-            <div className="source-grid">
-                <SourceTitle filmInfo={currSource.film} currFilm={currFilm} setCurrFilm={setCurrFilm} sendCommand={sendCommand}/>
-                <pre className="line-numbers source" data-line={currSource.curr_lineno}>
-                    <code className="language-py">{currSource.code}</code>
+            <SourceTitle filmInfo={currSource.film} currFilm={currFilm} setCurrFilm={setCurrFilm} sendCommand={sendCommand}/>
+            <div className="scrollable">
+                <pre ref={code} id="source-code" className="line-numbers source" data-line={currSource.curr_lineno}>
+                    <code className="source-code language-py">{currSource.code}</code>
                 </pre>
             </div>
         </div>

@@ -1,7 +1,11 @@
-import { useState } from "react";
 import '../App.css';
-import ArrowBackIosSharpIcon from '@material-ui/icons/ArrowBackIosSharp';
-import ArrowForwardIosSharpIcon from '@material-ui/icons/ArrowForwardIosSharp';
+import KeyboardArrowDownIcon from '@material-ui/icons/KeyboardArrowDown';
+import KeyboardArrowUpIcon from '@material-ui/icons/KeyboardArrowUp';
+import KeyboardArrowLeftIcon from '@material-ui/icons/KeyboardArrowLeft';
+import KeyboardArrowRightIcon from '@material-ui/icons/KeyboardArrowRight';
+import SubdirectoryArrowLeftIcon from '@material-ui/icons/SubdirectoryArrowLeft';
+import SubdirectoryArrowRightIcon from '@material-ui/icons/SubdirectoryArrowRight';
+
 
 const SourceTitle = ({filmInfo, currFilm, setCurrFilm, sendCommand}) => {
 
@@ -16,8 +20,12 @@ const SourceTitle = ({filmInfo, currFilm, setCurrFilm, sendCommand}) => {
             </div>
 
             <div className="btn-group">
-                <ArrowForwardIosSharpIcon className="button" onClick={() => sendCommand("next", "command")}/>
-                <ArrowBackIosSharpIcon className="button" onClick={() => sendCommand("back", "command")}/>
+                <SubdirectoryArrowRightIcon className="button" title="return" style={{fontSize: 30}} onClick={() => sendCommand("return", "command")}/>
+                <KeyboardArrowDownIcon className="button" fontSize="large" onClick={() => sendCommand("next", "command")}/>
+                <KeyboardArrowRightIcon className="button" fontSize="large" onClick={() => sendCommand("step", "command")}/>
+                <SubdirectoryArrowLeftIcon className="button" style={{fontSize: 30}} onClick={() => sendCommand("rb", "command")}/>
+                <KeyboardArrowUpIcon className="button" fontSize="large" onClick={() => sendCommand("back", "command")}/>
+                <KeyboardArrowLeftIcon className="button" fontSize="large" onClick={() => sendCommand("stepback", "command")}/>
             </div>
         </div>
     )
