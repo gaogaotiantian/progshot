@@ -95,7 +95,7 @@ class TestWebInterface(unittest.TestCase):
         self.check_stack(res)
         self.assertEqual(len(res["stack"]["stack"]), 3)
         self.assertIn("console", res.keys())
-        self.assertIn("* /home/mengjia/project/progshot/tests/test_scripts/basic.py(7):func_f", res["console"])
+        self.assertIn("func_f(i)\n* ", res["console"])
 
     def test_error(self):
         message = {"type": "console",
