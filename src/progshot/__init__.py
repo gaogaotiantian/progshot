@@ -5,7 +5,7 @@ __version__ = "0.0.1"
 
 from .progshot import ProgShot
 from .cli import cli_main
-from .pswebserver import web_server_main
+from .serverbooter import web_server_main
 
 
 _pshot = ProgShot()

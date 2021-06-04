@@ -18,7 +18,8 @@ class TestWebInterface(unittest.TestCase):
     def setUp(self):
         coverage = os.getenv("COVERAGE_RUN")
         if coverage:
-            cmd = ["coverage", "run", "--parallel-mode", "-m", "--pylib", "progshot.pswebserver", "--server_only", "out.pshot"]
+            cmd = ["coverage", "run", "--parallel-mode", "-m", "--pylib", "progshot.serverbooter",
+                   "--server_only", "out.pshot"]
         else:
             cmd = ["pswebserver", "--server_only", "out.pshot"]
         self.server = subprocess.Popen(cmd)
@@ -27,10 +28,11 @@ class TestWebInterface(unittest.TestCase):
             try:
                 asyncio.get_event_loop().run_until_complete(self.send_command(message))
                 break
-            except ConnectionRefusedError:
+            except Exception:
                 if i == 19:
+                    self.tearDown()
                     raise
-                time.sleep(0.1)
+                time.sleep(0.5)
 
     def tearDown(self):
         self.server.send_signal(signal.SIGINT)

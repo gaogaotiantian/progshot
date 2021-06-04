@@ -15,7 +15,7 @@ const StackElement = ({active, info, sendCommand}) => {
         };
 
     return (
-        <div className={"mono-word stack-element " + cls()} onClick={() => sendCommand("j " + info.idx.toString(), "command")}>
+        <div className={"mono-word stack-element " + cls()} onClick={() => sendCommand("frame " + info.idx.toString(), "command")}>
             {info.file_string + "\n > " + info.code_string + "\n"}
         </div>
     )
