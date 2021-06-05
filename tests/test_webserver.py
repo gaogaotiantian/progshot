@@ -3,6 +3,7 @@ import json
 import os
 import signal
 import subprocess
+import sys
 import time
 import unittest
 import websockets
@@ -37,7 +38,10 @@ class TestWebInterface(unittest.TestCase):
     def tearDown(self):
         # Wait until server finishes ws
         time.sleep(0.5)
-        self.server.send_signal(signal.SIGINT)
+        if sys.platform == "win32":
+            self.server.terminate()
+        else:
+            self.server.send_signal(signal.SIGINT)
         try:
             self.server.wait(timeout=5)
         except subprocess.TimeoutExpired:
