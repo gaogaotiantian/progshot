@@ -35,11 +35,14 @@ class TestWebInterface(unittest.TestCase):
                 time.sleep(0.5)
 
     def tearDown(self):
+        # Wait until server finishes ws
+        time.sleep(0.5)
         self.server.send_signal(signal.SIGINT)
         try:
             self.server.wait(timeout=5)
         except subprocess.TimeoutExpired:
             self.server.kill()
+            self.server.wait(timeout=5)
 
     async def send_command(self, message):
         uri = "ws://localhost:8080"
@@ -51,7 +54,6 @@ class TestWebInterface(unittest.TestCase):
     def check_source(self, message):
         self.assertIn("source", message.keys())
         self.assertIn("code", message["source"])
-        self.assertIn("curr_lineno", message["source"])
         self.assertIn("curr_lineno", message["source"])
         self.assertIn("locals", message["source"])
         self.assertIn("film", message["source"])

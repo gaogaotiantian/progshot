@@ -1,9 +1,10 @@
 import json
+from .webinterface import WebInterface
 
 
 class ProgShotWebServer:
-    def __init__(self, web_interface):
-        self.web_interface = web_interface
+    def __init__(self, filepath):
+        self.web_interface = WebInterface(filepath)
 
     async def communication(self, websocket, path):
         async for message in websocket:

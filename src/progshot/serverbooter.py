@@ -1,14 +1,16 @@
 import argparse
 import asyncio
+import functools
 import http.server
 import os
+from objprint import objprint
+import signal
 import socket
 import socketserver
 import sys
 import threading
 import websockets
 from .pswebserver import ProgShotWebServer
-from .webinterface import WebInterface
 
 
 HOSTNAME = "localhost"
@@ -26,9 +28,12 @@ class Handler(http.server.SimpleHTTPRequestHandler):
 
 
 class ServerBooter:
-    def __init__(self, options):
+    def __init__(self, options, web_server):
         self.httpd = None
         self.options = options
+        self.stop = None
+        self.web_server = web_server
+        self.ws_server = None
 
     def start_frontend(self):
         socketserver.TCPServer.allow_reuse_address = True
@@ -36,13 +41,19 @@ class ServerBooter:
         self.httpd = socketserver.TCPServer(("", FRONTENDPORT), Handler)
         self.httpd.serve_forever()
 
-    async def async_main(self, web_server):
-        stop = asyncio.get_event_loop().create_future()
-        import signal
-        asyncio.get_event_loop().add_signal_handler(signal.SIGTERM, stop.set_result, None)
-        asyncio.get_event_loop().add_signal_handler(signal.SIGINT, stop.set_result, None)
-        async with websockets.serve(web_server.communication, HOSTNAME, SERVERPORT):
-            await stop
+    async def async_main(self):
+        async with websockets.serve(self.web_server.communication, HOSTNAME, SERVERPORT):
+            await asyncio.Future()
+
+    def run(self):
+        self.front_end_thread = threading.Thread(target=self.start_frontend, daemon=True)
+        self.front_end_thread.start()
+        try:
+            asyncio.run(self.async_main())
+        except KeyboardInterrupt:
+            pass
+        self.httpd.shutdown()
+        self.front_end_thread.join()
 
 
 def web_server_main():
@@ -59,15 +70,10 @@ def web_server_main():
     if not filename.endswith("pshot"):
         print(f"Do not support file type {filename}")
         exit(1)
-    web_interface = WebInterface(fp)
-    web_server = ProgShotWebServer(web_interface)
+    web_server = ProgShotWebServer(fp)
     print("server is running at localhost:8000")
-    serverboot = ServerBooter(options)
-    front_end_thread = threading.Thread(target=serverboot.start_frontend, daemon=True)
-    front_end_thread.start()
-    asyncio.run(serverboot.async_main(web_server))
-    serverboot.httpd.shutdown()
-    front_end_thread.join()
+    serverboot = ServerBooter(options, web_server)
+    serverboot.run()
 
 
 if __name__ == "__main__":
