@@ -84,6 +84,8 @@ class TestPSVIewerBasic(CLITmpl):
         t.command("frame 1")
         t.command("p b")
         t.check_in("c")
+        t.command("frame 100")
+        t.check_in("out of")
         t.run()
 
     def test_goto(self):
