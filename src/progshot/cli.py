@@ -123,6 +123,13 @@ class CLI:
                 return False
         return True
 
+    def _switch_frame(self, frame_idx):
+        if 0 <= frame_idx < len(self.curr_film.frames):
+            self.curr_frame_idx = frame_idx
+            self.curr_frame = self.curr_film.frames[self.curr_frame_idx]
+            return True
+        return False
+
     def _switch_film(self, film_idx, allow_negative=False):
         # If it's a negative index, make it positive
         # Treat negative index as python counting from back
@@ -224,7 +231,7 @@ class CLI:
             print(s)
 
     def _do_default(self, args):
-        print(f"Unknown syntax {args}")
+        self.info(f"Unknown syntax {args}")
         return False
 
     def _get_val(self, val):
@@ -373,6 +380,16 @@ class CLI:
                 self.message(f"  {file_string}")
             self.message(f"  > {code_string.strip()}")
     do_w = do_where
+
+    @check_args(int, 1)
+    def do_frame(self, frame_idx):
+        """
+        frame_idx is an 1-index
+        """
+        if not self._switch_frame(frame_idx - 1):
+            self.error("target frame is out of range")
+            return
+        self._show_curr_frame()
 
     @check_args(str, None)
     def do_print(self, val):

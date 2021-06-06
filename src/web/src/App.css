@@ -1,0 +1,218 @@
+/* Licensed under the Apache License: http://www.apache.org/licenses/LICENSE-2.0 */
+/* For details: https://github.com/gaogaotiantian/progshot/blob/master/NOTICE.txt */
+
+
+.App {
+  text-align: center;
+}
+
+.App-logo {
+  height: 40vmin;
+  pointer-events: none;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .App-logo {
+    animation: App-logo-spin infinite 20s linear;
+  }
+}
+
+.App-header {
+  background-color: #282c34;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: calc(10px + 2vmin);
+  color: white;
+}
+
+.App-link {
+  color: #61dafb;
+}
+
+@keyframes App-logo-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+::-webkit-scrollbar {
+  display: none;
+}
+
+pre {
+  height: 100%;
+  box-sizing: border-box;
+  white-space: pre-wrap;
+}
+
+.scrollable {
+  overflow: scroll;
+  flex-grow: 1;
+}
+
+.section {
+  height: 100%;
+  background: #2d2d2d;
+  display: flex;
+  flex-direction: column;
+}
+
+.section-title{ 
+  grid-area: title; 
+  /* height: 100%; */
+  background: #252525;
+  color: #ccc;
+  border-bottom: 1px solid rgb(160, 160, 160);
+	font-family: consolas, monaco, 'andale mono', 'ubuntu mono', monospace;
+	font-size: 1.3em;
+	text-align: left;
+	word-spacing: normal;
+	word-break: normal;
+	word-wrap: normal;
+	line-height: 1.5;
+  padding: 0px 10px;
+  box-sizing: border-box;
+}
+
+.btn-group {
+  grid-area: btns;
+  float: right;
+}
+
+.button {
+  float: right;
+  color: #e7e7e7;
+  padding: 2px 2px;
+}
+
+.button:hover {
+  cursor: pointer;
+}
+
+.slider {
+  grid-area: slider;
+  -webkit-appearance: none;
+  width: auto; 
+  height: 10px;
+  border-radius: 2px;  
+  background: #b6b6b6;
+  outline: none;
+  opacity: 1;
+  -webkit-transition: .2s;
+  transition: opacity .2s;
+  margin: 6px;
+}
+
+.slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 15px;
+  height: 15px;
+  border-radius: 3px; 
+  background: #ffffff;
+  cursor: pointer;
+}
+
+.slider::-moz-range-thumb {
+  width: 15px;
+  height: 15px;
+  border-radius: 50%;
+  background: #ffffff;
+  cursor: pointer;
+}
+
+.slider-group{
+  grid-area: slider-group;
+  display: grid;
+  grid-template-areas:
+    'slider film-number';
+  grid-template-columns: auto min-content;
+  grid-gap: 0px;
+  padding: 0px;
+  margin: 0;
+}
+
+.source {
+  grid-area: source;
+}
+
+.source-title{
+  display: grid;
+  grid-template-areas:
+    'title btns'
+    'slider-group slider-group';
+  grid-template-columns: 1fr 1fr ;
+  grid-gap: 0px;
+  padding: 0px;
+  margin: 0;
+}
+
+.film-name{
+  padding: 0px 10px;
+}
+
+.film-number{
+  grid-area: film-number;
+	font-size: .7em;
+	text-align: center;
+  padding: 0px 8px;
+}
+
+.source-grid {
+  height: 100%;
+}
+
+.terminal{ 
+  /* grid-area: terminal;  */
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+  /* height: 100%; */
+}
+
+.container {
+  height: 100vh;
+}
+
+
+.terminal-input{
+  background: #2d2d2d;
+  display:table-cell; 
+  width:100%;
+  border: none;
+  outline: none;
+	white-space: pre;
+}
+
+.mono-word {
+  color: #ccc;
+	font-family: consolas, monaco, 'andale mono', 'ubuntu mono', monospace;
+	font-size: 1em;
+	text-align: left;
+	word-spacing: normal;
+	word-break: normal;
+	word-wrap: normal;
+	line-height: 1.5;
+
+}
+
+.stack {
+  background: #2d2d2d;
+}
+
+.stack-element {
+  height: auto;
+  margin: 6px 0px;
+	text-align: left;
+  word-break: break-all;
+	white-space: pre-wrap;
+}
+
+.active-stack {
+  background: #3b3735;
+}

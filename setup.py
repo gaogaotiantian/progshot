@@ -25,9 +25,16 @@ setuptools.setup(
     url="https://github.com/gaogaotiantian/progshot",
     packages=setuptools.find_packages("src"),
     package_dir={"":"src"},
+    package_data={
+        "progshot": [
+            "frontend/*",
+            "frontend/static/*",
+            "frontend/static/css/*",
+            "frontend/static/js/*",
+        ]
+    },
     classifiers=[
         "Development Status :: 3 - Alpha",
-        "Programming Language :: Python :: 3.6",
         "Programming Language :: Python :: 3.7",
         "Programming Language :: Python :: 3.8",
         "Programming Language :: Python :: 3.9",
@@ -39,11 +46,13 @@ setuptools.setup(
     install_requires = [
         "dill>=0.3.3",
         "rich>=10.2.1",
-        "objprint>=0.1.0"
+        "objprint>=0.1.0",
+        "websockets>=9.1"
     ],
     entry_points={
         "console_scripts": [
-            "psview = progshot:cli_main"
+            "psview = progshot:cli_main",
+            "pswebserver = progshot:web_server_main"
         ]
     }
 )
