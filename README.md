@@ -155,13 +155,13 @@ There are some global configs that you can change through ``config``.
 from progshot import config
 
 # Change the default dump file name
-config("filename", "other.pshot")
+config(filename="other.pshot")
 
 # Do not auto-save when the program exits
-config("save_at_exit", False)
+config(save_at_exit=False)
 
 # Change default trace depth to 10
-config("depth", 10)
+config(depth=10)
 ```
 
 ## Bugs/Requests

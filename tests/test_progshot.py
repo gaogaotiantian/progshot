@@ -60,7 +60,7 @@ class TestProgShot(unittest.TestCase):
         os.remove(f.name)
 
         with tempfile.NamedTemporaryFile(mode="w", suffix=".pshot", delete=False) as f:
-            ps.config("filename", f.name)
+            ps.config(filename=f.name)
             ps.dump()
         self.assertTrue(os.path.exists(f.name))
         os.remove(f.name)
