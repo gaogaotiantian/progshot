@@ -38,11 +38,7 @@ Each capture is called a **film**, which contains all the frames the local varia
 
 <details>
 
-<summary>
-
-By default, ``@trace`` is not recursive, but you can set the ``depth`` of ``@trace``
-
-</summary>
+<summary> By default, ``@trace`` is not recursive, but you can set the ``depth`` of ``@trace``</summary>
 
 ```python
 from progshot import trace
