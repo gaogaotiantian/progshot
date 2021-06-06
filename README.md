@@ -24,7 +24,7 @@ def swap(arr, i, j):
     arr[i], arr[j] = arr[j], arr[i]
 
 @trace
-def bubbleSort(arr):
+def bubble_sort(arr):
     n = len(arr)
     for i in range(n - 1):
         for j in range(n - i - 1):
@@ -48,7 +48,7 @@ def swap(arr, i, j):
     arr[i], arr[j] = arr[j], arr[i]
 
 @trace(depth=2)
-def bubbleSort(arr):
+def bubble_sort(arr):
     n = len(arr)
     for i in range(n - 1):
         for j in range(n - i - 1):
@@ -68,7 +68,7 @@ from progshot import dump
 
 for i in range(3):
     arr = [random.randint(0, 100) for _ in range(10)]
-    bubbleSort(arr)
+    bubble_sort(arr)
     dump(filename=f"sort_{i}.pshot")
 ```
 
