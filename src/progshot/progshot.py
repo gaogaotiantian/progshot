@@ -108,7 +108,7 @@ class ProgShot:
             return inner(method)
         return inner
 
-    def dump(self, filename=None):
+    def dump(self, filename=None, clear_data=True):
         if filename is None:
             filename = self._file
         if self._films:
@@ -117,6 +117,10 @@ class ProgShot:
                     "sources": self._sources,
                     "films": self._films
                 }, f)
+
+        if clear_data:
+            self._films = []
+            self._sources = {}
 
     def config(self, **kwargs):
         for key, val in kwargs.items():
@@ -129,11 +133,16 @@ class ProgShot:
                     self._save_at_exit = True
                 elif val not in (True, False):
                     raise TypeError(f"save_at_exit should be True or False, not {val}")
-            if key == "depth":
+            elif key == "depth":
                 try:
                     self._trace_config["depth"] = int(val)
                 except ValueError:
                     raise ValueError(f"depth can only be integer, not {val}")
+            elif key == "filename":
+                if isinstance(val, str):
+                    self._file = val
+                else:
+                    raise ValueError(f"filename can only be string, not {val}")
 
     def __reduce__(self):
         # To make sure if this object is accidentally pickled, the file size won't

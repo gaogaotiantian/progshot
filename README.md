@@ -3,6 +3,8 @@
 
 progshot is a debugging tool that enables "offline-debugging" for your python program.
 
+[![example_img](https://github.com/gaogaotiantian/progshot/blob/master/img/example.png)](https://github.com/gaogaotiantian/progshot/blob/master/img/example.png)
+
 ## Install
 
 ```
@@ -11,37 +13,6 @@ pip install progshot
 
 ## Usage
 
-### Capture
-
-To capture the states of your program, use ``capture`` function.
-
-```python
-from progshot import capture
-
-def add(a, b):
-    capture()
-    return a + b
-```
-
-In ``progshot``, we call a capture that has all the frame information at that time a **film**.
-
-``progshot`` will automatically save all the captures as ``out.pshot``
-
-<details>
-<summary> You can give a name(bookmark) for the capture to switch to the film quickly </summary>
-
-Do not use space in ``name``
-
-```python
-from progshot import capture
-
-def add(a, b):
-    capture(name="cap_in_add")
-    return a + b
-```
-
-</details>
-
 ### Trace
 
 To capture a continuous run and be able to offline debug it like a real debugger, use ``@trace``
@@ -49,43 +20,82 @@ To capture a continuous run and be able to offline debug it like a real debugger
 ```python
 from progshot import trace
 
+def swap(arr, i, j):
+    arr[i], arr[j] = arr[j], arr[i]
+
 @trace
-def f(a, b):
-    c = a + b
-    b = c * a
-    return c - b
+def bubbleSort(arr):
+    n = len(arr)
+    for i in range(n - 1):
+        for j in range(n - i - 1):
+            if arr[j] > arr[j + 1]:
+                swap(arr, j, j + 1)
 ```
 
-``@trace`` will record every line executed in the decorated function and provide a debugger-like
-environment offline, where you can not only step forward, but go backward as well.
+``@trace`` will record every line executed in the decorated function and generated a ``out.pshot`` file when the program exits. With ``psviewer``, you can enjoy a debugger-like environment offline, where you can not only go forward, but go backward as well.
 
-By default, ``@trace`` is not recursive, but you can set the ``depth`` of ``@trace``
+Each capture is called a **film**, which contains all the frames the local variables in them.
+
+<details>
+
+<summary> By default, <code>@trace</code> is not recursive, but you can set the ``depth`` of ``@trace``</summary>
 
 ```python
 from progshot import trace
 
-def g(n):
-    # this function will be recorded as well
-    return n * n
+def swap(arr, i, j):
+    # Now this function will be recorded as well
+    arr[i], arr[j] = arr[j], arr[i]
 
 @trace(depth=2)
-def f(a, b):
-    c = a + b
-    b = c * a
-    return g(c) + g(b)
+def bubbleSort(arr):
+    n = len(arr)
+    for i in range(n - 1):
+        for j in range(n - i - 1):
+            if arr[j] > arr[j + 1]:
+                swap(arr, j, j + 1)
 ```
+
+</details>
+
+<details>
+
+<summary>You can also manually dump to a file in your program</summary>
+
+```python
+
+from progshot import dump
+
+for i in range(3):
+    arr = [random.randint(0, 100) for _ in range(10)]
+    bubbleSort(arr)
+    dump(filename=f"sort_{i}.pshot")
+```
+
+By default, ``dump`` will clear the current data after dumping, you can pass ``clear_data=False`` as an argument to prevent that.
+
+</details>
 
 ### View
 
-To view the report, you can use CLI or Web interface.
+To view the report, you can use Web interface or CLI.
 
-#### CLI
+#### Web
 
 ```
 psview out.pshot
 ```
 
-The CLI interface is similar to pdb. You can use commands that have the same meaning in pdb
+#### CLI
+
+```
+psview-cli out.pshot
+```
+
+Web interface also provides a terminal which behaves like the CLI.
+
+The CLI interface is similar to pdb. You can use commands that have the similar meanings in pdb, except
+that you have a set of "backward debugging" commands.
 
 <details>
 <summary>psview commands</summary>
@@ -108,3 +118,58 @@ The CLI interface is similar to pdb. You can use commands that have the same mea
 * ll - show full source code of existing frame
 
 </details>
+
+### Single Capture
+
+You can also use ``capture`` function to do a single capture.
+
+```python
+from progshot import capture
+
+def add(a, b):
+    capture()
+    return a + b
+```
+
+<details>
+
+<summary> You can give a name(bookmark) for the capture to switch to the film quickly </summary>
+
+Do not use space in ``name``
+
+```python
+from progshot import capture
+
+def add(a, b):
+    capture(name="cap_in_add")
+    return a + b
+```
+
+</details>
+
+### Config
+
+There are some global configs that you can change through ``config``.
+
+```python
+from progshot import config
+
+# Change the default dump file name
+config(filename="other.pshot")
+
+# Do not auto-save when the program exits
+config(save_at_exit=False)
+
+# Change default trace depth to 10
+config(depth=10)
+```
+
+## Bugs/Requests
+
+Please send bug reports and feature requests through [github issue tracker](https://github.com/gaogaotiantian/progshot/issues).
+
+## License
+
+Copyright Tian Gao, Mengjia Zhao, 2021.
+
+Distributed under the terms of the  [Apache 2.0 license](https://github.com/gaogaotiantian/progshot/blob/master/LICENSE).

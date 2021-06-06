@@ -88,7 +88,7 @@ class CLITmpl(unittest.TestCase):
         if os.getenv("COVERAGE_RUN"):
             if "python" in cmd[0]:
                 cmd = ["coverage", "run", "--parallel-mode", "--pylib"] + cmd[1:]
-            elif cmd[0] == "psview":
+            elif "psview" in cmd[0]:
                 cmd = ["coverage", "run", "--parallel-mode", "--pylib", "-m", "progshot.cli"] + cmd[1:]
 
         return subprocess.Popen(
