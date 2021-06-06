@@ -29,9 +29,9 @@ class Handler(http.server.SimpleHTTPRequestHandler):
 
 
 class ServerBooter:
-    def __init__(self, options, web_server):
+    def __init__(self, web_server, server_only=False):
         self.httpd = None
-        self.options = options
+        self.server_only = server_only
         self.web_server = web_server
 
     def start_frontend(self):
@@ -47,7 +47,7 @@ class ServerBooter:
     def run(self):
         self.front_end_thread = threading.Thread(target=self.start_frontend, daemon=True)
         self.front_end_thread.start()
-        if not self.options.server_only:
+        if not self.server_only:
             import webbrowser
             webbrowser.open_new_tab(f'http://{HOSTNAME}:{FRONTENDPORT}')
         try:
@@ -69,8 +69,8 @@ def web_server_main():
         print(f"File {fp} not found")
         exit(1)
     web_server = ProgShotWebServer(fp)
-    print("server is running at localhost:8000")
-    serverboot = ServerBooter(options, web_server)
+    print(f"server is running at {HOSTNAME}:{FRONTENDPORT}")
+    serverboot = ServerBooter(web_server, server_only=options.server_only)
     serverboot.run()
 
 
