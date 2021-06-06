@@ -6,7 +6,7 @@ def swap(arr, i, j):
 
 
 @trace
-def bubbleSort(arr):
+def bubble_sort(arr):
     n = len(arr)
     for i in range(n - 1):
         for j in range(n - i - 1):
@@ -15,5 +15,5 @@ def bubbleSort(arr):
 
 
 arr = [54, 98, 42, 40, 25, 45, 33, 82]
-bubbleSort(arr)
+bubble_sort(arr)
 print(arr)
