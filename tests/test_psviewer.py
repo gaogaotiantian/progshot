@@ -72,6 +72,20 @@ class TestPSVIewerBasic(CLITmpl):
         t.check_in("3")
         t.run()
 
+    def test_frame(self):
+        t = self.create_test("out.pshot")
+        t.command("frame 3")
+        t.check_in("for i")
+        t.check_in("func_g")
+        t.command("p i")
+        t.check_in("0")
+        t.command("p a")
+        t.check_in("NameError")
+        t.command("frame 1")
+        t.command("p b")
+        t.check_in("c")
+        t.run()
+
     def test_goto(self):
         t = self.create_test("out.pshot")
         t.command("g 2")
@@ -116,10 +130,10 @@ class TestPSVIewerBasic(CLITmpl):
         t.run()
 
     def test_cmdline(self):
-        p = self.run_cmd(["psview", "out.pshot"])
+        p = self.run_cmd(["psview-cli", "out.pshot"])
         out, _ = p.communicate("q\n", timeout=5)
         self.assertIn("Film-1", out)
-        p = self.run_cmd(["psview", "no_such_file"])
+        p = self.run_cmd(["psview-cli", "no_such_file"])
         out, _ = p.communicate(timeout=5)
         self.assertIn("Traceback", out)
 

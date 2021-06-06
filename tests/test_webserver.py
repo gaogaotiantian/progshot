@@ -23,10 +23,10 @@ class TestWebInterface(unittest.TestCase):
     def setUp(self):
         coverage = os.getenv("COVERAGE_RUN")
         if coverage:
-            cmd = ["coverage", "run", "--parallel-mode", "-m", "--pylib", "progshot.serverbooter",
+            cmd = ["coverage", "run", "--parallel-mode", "--pylib", "-m", "progshot.serverbooter",
                    "--server_only", "out.pshot"]
         else:
-            cmd = ["pswebserver", "--server_only", "out.pshot"]
+            cmd = ["psview", "--server_only", "out.pshot"]
         self.server = subprocess.Popen(cmd)
         message = {"type": "init"}
         for i in range(20):
@@ -122,8 +122,12 @@ class TestWebInterface(unittest.TestCase):
 
 class TestWebServer(unittest.TestCase):
     def test_nofile(self):
-        cmd = ["coverage", "run", "--parallel-mode", "-m", "--pylib", "progshot.serverbooter",
-               "--server_only", "nonexistfile"]
+        coverage = os.getenv("COVERAGE_RUN")
+        if coverage:
+            cmd = ["coverage", "run", "--parallel-mode", "--pylib", "-m", "progshot.serverbooter",
+                   "--server_only", "nonexistfile"]
+        else:
+            cmd = ["psview", "--server_only", "nonexistfile"]
         code, output = subprocess.getstatusoutput(" ".join(cmd))
         self.assertEqual("File nonexistfile not found", output)
         self.assertEqual(1, code)

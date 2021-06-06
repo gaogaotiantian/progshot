@@ -59,6 +59,12 @@ class TestProgShot(unittest.TestCase):
         self.assertTrue(os.path.exists(f.name))
         os.remove(f.name)
 
+        with tempfile.NamedTemporaryFile(mode="w", suffix=".pshot", delete=False) as f:
+            ps._file = f.name
+            ps.dump()
+        self.assertTrue(os.path.exists(f.name))
+        os.remove(f.name)
+
 
 class TestProgshotCLI(CLITmpl):
     def test_gen(self):
