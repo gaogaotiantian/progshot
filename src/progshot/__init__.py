@@ -12,11 +12,13 @@ _pshot = ProgShot()
 capture = _pshot.capture
 config = _pshot.config
 trace = _pshot.trace
+dump = _pshot.dump
 
 __all__ = [
     "capture",
     "config",
     "cli_main",
     "trace",
+    "dump",
     "web_server_main"
 ]

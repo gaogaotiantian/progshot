@@ -32,12 +32,17 @@ def bubbleSort(arr):
                 swap(arr, j, j + 1)
 ```
 
-``@trace`` will record every line executed in the decorated function and generated a ``out.pshot`` file. With ``psviewer``,
-you can enjoy a debugger-like environment offline, where you can not only go forward, but go backward as well.
+``@trace`` will record every line executed in the decorated function and generated a ``out.pshot`` file when the program exits. With ``psviewer``, you can enjoy a debugger-like environment offline, where you can not only go forward, but go backward as well.
 
 Each capture is called a **film**, which contains all the frames the local variables in them.
 
+<details>
+
+<summary>
+
 By default, ``@trace`` is not recursive, but you can set the ``depth`` of ``@trace``
+
+</summary>
 
 ```python
 from progshot import trace
@@ -54,6 +59,26 @@ def bubbleSort(arr):
             if arr[j] > arr[j + 1]:
                 swap(arr, j, j + 1)
 ```
+
+</details>
+
+<details>
+
+<summary>You can also manually dump to a file in your program</summary>
+
+```python
+
+from progshot import dump
+
+for i in range(3):
+    arr = [random.randint(0, 100) for _ in range(10)]
+    bubbleSort(arr)
+    dump(filename=f"sort_{i}.pshot")
+```
+
+By default, ``dump`` will clear the current data after dumping, you can pass ``clear_data=False`` as an argument to prevent that.
+
+</details>
 
 ### View
 
@@ -125,6 +150,23 @@ def add(a, b):
 ```
 
 </details>
+
+### Config
+
+There are some global configs that you can change through ``config``.
+
+```python
+from progshot import config
+
+# Change the default dump file name
+config("filename", "other.pshot")
+
+# Do not auto-save when the program exits
+config("save_at_exit", False)
+
+# Change default trace depth to 10
+config("depth", 10)
+```
 
 ## Bugs/Requests
 
