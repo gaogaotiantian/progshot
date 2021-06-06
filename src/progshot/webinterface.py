@@ -1,3 +1,7 @@
+# Licensed under the Apache License: http://www.apache.org/licenses/LICENSE-2.0
+# For details: https://github.com/gaogaotiantian/progshot/blob/master/NOTICE.txt
+
+
 from .cli import CLI
 
 
@@ -20,10 +24,10 @@ class WebInterface(CLI):
         }
 
     def get_locals(self):
-        res = ""
+        res = []
         for key, val in self.curr_frame.locals.items():
-            res += str(key) + " = " + str(val) + "\n"
-        return res
+            res.append(f"{key} = {val}\n")
+        return "".join(res)
 
     def get_stack(self):
         res = []

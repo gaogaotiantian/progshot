@@ -1,3 +1,7 @@
+// Licensed under the Apache License: http://www.apache.org/licenses/LICENSE-2.0
+// For details: https://github.com/gaogaotiantian/progshot/blob/master/NOTICE.txt
+
+
 import '../App.css';
 import KeyboardArrowDownIcon from '@material-ui/icons/KeyboardArrowDown';
 import KeyboardArrowUpIcon from '@material-ui/icons/KeyboardArrowUp';
@@ -20,12 +24,12 @@ const SourceTitle = ({filmInfo, currFilm, setCurrFilm, sendCommand}) => {
             </div>
 
             <div className="btn-group">
-                <SubdirectoryArrowRightIcon className="button" title="return" style={{fontSize: 30}} onClick={() => sendCommand("return", "command")}/>
-                <KeyboardArrowDownIcon className="button" fontSize="large" onClick={() => sendCommand("next", "command")}/>
-                <KeyboardArrowRightIcon className="button" fontSize="large" onClick={() => sendCommand("step", "command")}/>
-                <SubdirectoryArrowLeftIcon className="button" style={{fontSize: 30}} onClick={() => sendCommand("rb", "command")}/>
-                <KeyboardArrowUpIcon className="button" fontSize="large" onClick={() => sendCommand("back", "command")}/>
-                <KeyboardArrowLeftIcon className="button" fontSize="large" onClick={() => sendCommand("stepback", "command")}/>
+                <div title="return"><SubdirectoryArrowRightIcon className="button" style={{fontSize: 30}} onClick={() => sendCommand("return", "command")}/></div>
+                <div title="next"><KeyboardArrowDownIcon className="button" fontSize="large" onClick={() => sendCommand("next", "command")}/></div>
+                <div title="step"><KeyboardArrowRightIcon className="button" fontSize="large" onClick={() => sendCommand("step", "command")}/></div>
+                <div title="return back"><SubdirectoryArrowLeftIcon className="button" style={{fontSize: 30}} onClick={() => sendCommand("rb", "command")}/></div>
+                <div title="back"><KeyboardArrowUpIcon className="button" fontSize="large" onClick={() => sendCommand("back", "command")}/></div>
+                <div title="step back"><KeyboardArrowLeftIcon className="button" fontSize="large" onClick={() => sendCommand("stepback", "command")}/></div>
             </div>
         </div>
     )

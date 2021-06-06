@@ -1,3 +1,7 @@
+# Licensed under the Apache License: http://www.apache.org/licenses/LICENSE-2.0
+# For details: https://github.com/gaogaotiantian/progshot/blob/master/NOTICE.txt
+
+
 import argparse
 import asyncio
 import http.server
@@ -28,9 +32,7 @@ class ServerBooter:
     def __init__(self, options, web_server):
         self.httpd = None
         self.options = options
-        self.stop = None
         self.web_server = web_server
-        self.ws_server = None
 
     def start_frontend(self):
         socketserver.TCPServer.allow_reuse_address = True
@@ -45,6 +47,9 @@ class ServerBooter:
     def run(self):
         self.front_end_thread = threading.Thread(target=self.start_frontend, daemon=True)
         self.front_end_thread.start()
+        if not self.options.server_only:
+            import webbrowser
+            webbrowser.open_new_tab(f'http://{HOSTNAME}:{FRONTENDPORT}')
         try:
             asyncio.run(self.async_main())
         except KeyboardInterrupt:
@@ -59,13 +64,9 @@ def web_server_main():
     parser.add_argument("--server_only", "-s", default=False, action="store_true",
                         help="Only start the server, do not open webpage")
     options = parser.parse_args(sys.argv[1:])
-    if not options.server_only:
-        import webbrowser
-        webbrowser.open_new_tab(f'http://{HOSTNAME}:{FRONTENDPORT}')
     fp = options.file[0]
-    filename = os.path.basename(fp)
-    if not filename.endswith("pshot"):
-        print(f"Do not support file type {filename}")
+    if not os.path.isfile(fp):
+        print(f"File {fp} not found")
         exit(1)
     web_server = ProgShotWebServer(fp)
     print("server is running at localhost:8000")

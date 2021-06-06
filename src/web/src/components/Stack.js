@@ -1,5 +1,7 @@
-import Prism from "prismjs"
-import { useEffect } from "react";
+// Licensed under the Apache License: http://www.apache.org/licenses/LICENSE-2.0
+// For details: https://github.com/gaogaotiantian/progshot/blob/master/NOTICE.txt
+
+
 import "../prism.css";
 import '../App.css';
 import 'prismjs/components/prism-python'

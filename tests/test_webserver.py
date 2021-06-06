@@ -1,3 +1,7 @@
+# Licensed under the Apache License: http://www.apache.org/licenses/LICENSE-2.0
+# For details: https://github.com/gaogaotiantian/progshot/blob/master/NOTICE.txt
+
+
 import asyncio
 import json
 import os
@@ -114,6 +118,15 @@ class TestWebInterface(unittest.TestCase):
         self.assertEqual(len(res["stack"]["stack"]), 3)
         self.assertIn("console", res.keys())
         self.assertIn("Target film is out of range", res["console"])
+
+
+class TestWebServer(unittest.TestCase):
+    def test_nofile(self):
+        cmd = ["coverage", "run", "--parallel-mode", "-m", "--pylib", "progshot.serverbooter",
+               "--server_only", "nonexistfile"]
+        code, output = subprocess.getstatusoutput(" ".join(cmd))
+        self.assertEqual("File nonexistfile not found", output)
+        self.assertEqual(1, code)
 
 
 if __name__ == "__main__":

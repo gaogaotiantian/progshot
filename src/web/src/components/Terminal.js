@@ -1,3 +1,7 @@
+// Licensed under the Apache License: http://www.apache.org/licenses/LICENSE-2.0
+// For details: https://github.com/gaogaotiantian/progshot/blob/master/NOTICE.txt
+
+
 import Prism from "prismjs"
 import { useEffect, useRef, useState } from "react";
 import "../prism.css";
