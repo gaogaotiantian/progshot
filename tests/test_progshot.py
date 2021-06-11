@@ -36,6 +36,13 @@ class TestProgShot(unittest.TestCase):
             self.assertEqual(film.frames[0].start_lineno, -1)
             self.assertEqual(film.frames[0].frame_lines, 0)
 
+    def test_with(self):
+        ps = progshot.ProgShot(save_at_exit=False)
+        with ps.shoot():
+            _ = 1
+            _ = 2
+        self.assertEqual(len(ps._films), 2)
+
     def test_config(self):
         ps = progshot.ProgShot()
         self.assertEqual(ps._save_at_exit, True)
@@ -45,6 +52,8 @@ class TestProgShot(unittest.TestCase):
         self.assertEqual(ps._save_at_exit, True)
         with self.assertRaises(TypeError):
             ps.config(save_at_exit="False")
+        with self.assertRaises(ValueError):
+            ps.config(filename=123)
 
         ps.config(depth=3)
         self.assertEqual(ps._trace_config["depth"], 3)

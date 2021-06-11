@@ -36,6 +36,15 @@ def bubble_sort(arr):
 
 Each capture is called a **film**, which contains all the frames the local variables in them.
 
+Or you can use ``with`` to capture statements
+
+```python
+from progshot import shoot  # As in shoot a movie
+
+with shoot(depth=3):
+    # some code here
+```
+
 <details>
 
 <summary> By default, <code>@trace</code> is not recursive, but you can set the <code>depth</code> of <code>@trace</code></summary>
