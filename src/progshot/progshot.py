@@ -44,7 +44,8 @@ class PSContext:
         sys.settrace(call_frame.f_trace)
 
     def __exit__(self, exc_type, exc_value, traceback):
-        sys.settrace(self.prev_trace_func)  # pragma: no cover
+        # pragma: no cover
+        sys.settrace(self.prev_trace_func)
         call_frame = inspect.currentframe().f_back
         call_frame.f_trace = self.prev_trace_func
 
@@ -81,6 +82,7 @@ class ProgShot:
 
         if self._is_progshot_frame(frame):
             # We don't capture frames inside progshot
+            # pragma: no cover
             del frame
             return
 

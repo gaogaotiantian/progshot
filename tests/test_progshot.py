@@ -52,6 +52,8 @@ class TestProgShot(unittest.TestCase):
         self.assertEqual(ps._save_at_exit, True)
         with self.assertRaises(TypeError):
             ps.config(save_at_exit="False")
+        with self.assertRaises(ValueError):
+            ps.config(filename=123)
 
         ps.config(depth=3)
         self.assertEqual(ps._trace_config["depth"], 3)
