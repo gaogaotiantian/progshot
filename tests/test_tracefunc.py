@@ -4,6 +4,7 @@
 
 import inspect
 import progshot
+from progshot.film import Film
 from progshot.progshot import TraceFunc
 import sys
 import unittest
@@ -36,7 +37,12 @@ class TestTraceFunc(unittest.TestCase):
             pass
 
         p = progshot.ProgShot(save_at_exit=False)
-        tf = TraceFunc(capture=p.capture, depth=2, outer=0)
+
+        # For sys.settrace, if "call" returns None, then "return" will never
+        # trigger, so we can keep count of depth. For sys.profile, "call"
+        # and "return" will always trigger, so we set curr_depth to a larger
+        # value
+        tf = TraceFunc(capture=p.capture, depth=6, outer=0, curr_depth=4)
         sys.setprofile(tf)
         # Trigger the trace function
         p.config(save_at_exit=False)
@@ -45,3 +51,12 @@ class TestTraceFunc(unittest.TestCase):
         sys.setprofile(None)
         # call to stub will not be captured, only return
         self.assertEqual(len(p._films), 1)
+
+        p = progshot.ProgShot(save_at_exit=False)
+
+        frames = inspect.getouterframes(inspect.currentframe())
+        tf = TraceFunc(capture=p.capture, depth=6, outer=0, curr_depth=4)
+        sys.setprofile(tf)
+        _ = Film(frames)
+        sys.setprofile(None)
+        self.assertGreater(len(p._films), 30)

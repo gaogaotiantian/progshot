@@ -31,23 +31,22 @@ class TraceFunc:
 
 
 class PSContext:
-    def __init__(self, pshot, depth, outer):
-        self.pshot = pshot
+    def __init__(self, capture, depth, outer):
+        self.capture = capture
         self.depth = depth
         self.outer = outer
         self.prev_trace_func = None
 
     def __enter__(self):
-        pshot = self.pshot
         call_frame = inspect.currentframe().f_back
         self.prev_trace_func = sys.gettrace()
-        call_frame.f_trace = TraceFunc(pshot.capture, self.depth, outer=self.outer, curr_depth=1)
+        call_frame.f_trace = TraceFunc(self.capture, self.depth, outer=self.outer, curr_depth=1)
         sys.settrace(call_frame.f_trace)
 
     def __exit__(self, exc_type, exc_value, traceback):
+        sys.settrace(self.prev_trace_func)  # pragma: no cover
         call_frame = inspect.currentframe().f_back
         call_frame.f_trace = self.prev_trace_func
-        sys.settrace(self.prev_trace_func)
 
 
 class ProgShot:
@@ -131,7 +130,7 @@ class ProgShot:
     def shoot(self, depth=None, outer=0):
         if depth is None:
             depth = self._trace_config["depth"]
-        return PSContext(self, depth, outer)
+        return PSContext(self.capture, depth, outer)
 
     def dump(self, filename=None, clear_data=True):
         if filename is None:
