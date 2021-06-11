@@ -39,8 +39,8 @@ class TestProgShot(unittest.TestCase):
     def test_with(self):
         ps = progshot.ProgShot(save_at_exit=False)
         with ps.shoot():
-            a = 1
-            b = 2
+            _ = 1
+            _ = 2
         self.assertEqual(len(ps._films), 2)
 
     def test_config(self):
