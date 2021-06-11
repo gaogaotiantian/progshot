@@ -11,9 +11,9 @@ from .film import Film
 
 
 class TraceFunc:
-    def __init__(self, capture, depth, outer=0):
+    def __init__(self, capture, depth, outer=0, curr_depth=0):
         self.depth = depth
-        self.curr_depth = 0
+        self.curr_depth = curr_depth
         self.outer = outer
         self.capture = capture
 
@@ -28,6 +28,26 @@ class TraceFunc:
         elif event == "return":
             self.capture(frame=frame, outer=self.curr_depth + self.outer - 1)
             self.curr_depth -= 1
+
+
+class PSContext:
+    def __init__(self, pshot, depth, outer):
+        self.pshot = pshot
+        self.depth = depth
+        self.outer = outer
+        self.prev_trace_func = None
+
+    def __enter__(self):
+        pshot = self.pshot
+        call_frame = inspect.currentframe().f_back
+        self.prev_trace_func = sys.gettrace()
+        call_frame.f_trace = TraceFunc(pshot.capture, self.depth, outer=self.outer, curr_depth=1)
+        sys.settrace(call_frame.f_trace)
+
+    def __exit__(self, exc_type, exc_value, traceback):
+        call_frame = inspect.currentframe().f_back
+        call_frame.f_trace = self.prev_trace_func
+        sys.settrace(self.prev_trace_func)
 
 
 class ProgShot:
@@ -107,6 +127,11 @@ class ProgShot:
         if method:
             return inner(method)
         return inner
+
+    def shoot(self, depth=None, outer=0):
+        if depth is None:
+            depth = self._trace_config["depth"]
+        return PSContext(self, depth, outer)
 
     def dump(self, filename=None, clear_data=True):
         if filename is None:

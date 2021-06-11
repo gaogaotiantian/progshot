@@ -13,6 +13,7 @@ capture = _pshot.capture
 config = _pshot.config
 trace = _pshot.trace
 dump = _pshot.dump
+shoot = _pshot.shoot
 
 __all__ = [
     "capture",
@@ -20,5 +21,6 @@ __all__ = [
     "cli_main",
     "trace",
     "dump",
+    "shoot",
     "web_server_main"
 ]

@@ -36,6 +36,13 @@ class TestProgShot(unittest.TestCase):
             self.assertEqual(film.frames[0].start_lineno, -1)
             self.assertEqual(film.frames[0].frame_lines, 0)
 
+    def test_with(self):
+        ps = progshot.ProgShot(save_at_exit=False)
+        with ps.shoot():
+            a = 1
+            b = 2
+        self.assertEqual(len(ps._films), 2)
+
     def test_config(self):
         ps = progshot.ProgShot()
         self.assertEqual(ps._save_at_exit, True)
