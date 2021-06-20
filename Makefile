@@ -21,6 +21,10 @@ lint:
 test:
 	python -m unittest
 
+.PHONY: benchmark
+benchmark:
+	python benchmark/run_benchmark.py
+
 clean:
 	rm -rf __pycache__
 	rm -rf tests/__pycache__

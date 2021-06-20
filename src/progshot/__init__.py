@@ -3,12 +3,11 @@
 
 __version__ = "0.0.1"
 
-from .progshot import ProgShot
+from .progshot import _pshot, ProgShot
 from .cli import cli_main
 from .serverbooter import web_server_main
 
 
-_pshot = ProgShot()
 capture = _pshot.capture
 config = _pshot.config
 trace = _pshot.trace
@@ -22,5 +21,6 @@ __all__ = [
     "trace",
     "dump",
     "shoot",
+    "ProgShot",
     "web_server_main"
 ]

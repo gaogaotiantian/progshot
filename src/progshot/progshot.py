@@ -142,9 +142,12 @@ class ProgShot:
                     "films": self._films
                 }, f)
 
+        dumped_films = len(self._films)
         if clear_data:
             self._films = []
             self._sources = {}
+
+        return dumped_films
 
     def config(self, **kwargs):
         for key, val in kwargs.items():
@@ -169,6 +172,7 @@ class ProgShot:
                     raise ValueError(f"filename can only be string, not {val}")
 
     def __reduce__(self):
-        # To make sure if this object is accidentally pickled, the file size won't
-        # go crazy because recursively including ._films
-        return (ProgShot, tuple())
+        return "_pshot"
+
+
+_pshot = ProgShot()
