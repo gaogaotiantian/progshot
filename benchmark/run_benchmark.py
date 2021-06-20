@@ -2,8 +2,6 @@ import benchmark_cases
 import importlib
 import os
 import time
-from watchpoints import watch
-from progshot import _pshot
 
 
 class Benchmark:
