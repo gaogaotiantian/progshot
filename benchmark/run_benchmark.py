@@ -28,9 +28,9 @@ class Benchmark:
         print(f"= Byte/Film  - {pshot_size / films}")
 
     def timeit(self, func):
-        start = time.time()
+        start = time.perf_counter()
         func()
-        return time.time() - start
+        return time.perf_counter() - start
 
 
 if __name__ == "__main__":
