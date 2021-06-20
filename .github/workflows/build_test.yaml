@@ -49,6 +49,9 @@ jobs:
         if (Test-Path -Path '.\requirements-test.txt' -PathType Leaf) {pip install -r requirements-test.txt}
         pip install (Get-ChildItem dist/*.whl)
         python -m unittest
+    - name: Run benckmarks
+      run: |
+        python benchmark/run_benchmark.py
     - name: Generate coverage report
       run: |
         coverage run --parallel-mode --pylib -m unittest
