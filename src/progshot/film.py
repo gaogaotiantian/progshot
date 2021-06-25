@@ -5,6 +5,7 @@
 import dill
 import inspect
 import os
+from .util import is_progshot_frame
 
 
 class UnPickleable(object):
@@ -14,11 +15,8 @@ class UnPickleable(object):
 class Frame:
     def __init__(self, frame, filename, start_lineno, frame_lines, curr_lineno, object_dict):
         self.locals = {}
+        assert(not is_progshot_frame(frame))
         for key, val in frame.f_locals.items():
-            m = inspect.getmodule(val)
-            if m and hasattr(m, "__package__") and m.__package__ == "progshot":
-                # Skip the variable if it's in progshot
-                continue
             val_id = id(val)
             self.locals[key] = val_id
             if val_id not in object_dict:
@@ -68,8 +66,7 @@ class Film:
         self.sources = set()
         for f_info in frames:
             frame = f_info.frame
-            m = inspect.getmodule(frame)
-            if m and hasattr(m, "__package__") and m.__package__ == "progshot":
+            if is_progshot_frame(frame):
                 # Skip the frame if it's in progshot
                 continue
             filename = os.path.abspath(f_info.filename)

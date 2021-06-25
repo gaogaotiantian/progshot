@@ -9,6 +9,7 @@ import functools
 import inspect
 import sys
 from .film import Film
+from .util import is_progshot_frame
 
 
 class TraceFunc:
@@ -51,11 +52,16 @@ class TraceFunc:
 
     def _local_change(self, frame):
         for ins in self._get_line_instructions(frame):
-            if ins.opname.startswith("CALL_"):
+            if not self._is_ins_local(ins):
                 return False
-            elif ins.opname.startswith("STORE_"):
-                if ins.opname not in ("STORE_NAME", "STORE_FAST"):
-                    return False
+        return True
+
+    def _is_ins_local(self, ins):
+        if ins.opname.startswith("CALL_"):
+            return False
+        elif ins.opname.startswith("STORE_"):
+            if ins.opname not in ("STORE_NAME", "STORE_FAST"):
+                return False
         return True
 
 
@@ -90,10 +96,6 @@ class ProgShot:
         atexit.register(self.dump)
         self.config(**kwargs)
 
-    def _is_progshot_frame(self, frame):
-        m = inspect.getmodule(frame)
-        return m and hasattr(m, "__package__") and m.__package__ == "progshot"
-
     def capture(self, name=None, frame=None, outer=None, pickled_objects={}):
         """
         name: str
@@ -108,13 +110,13 @@ class ProgShot:
         if frame is None:
             frame = inspect.currentframe().f_back
 
-        if self._is_progshot_frame(frame):  # pragma: no cover
+        if is_progshot_frame(frame):  # pragma: no cover
             # We don't capture frames inside progshot
             del frame
             return
 
         outer_frames = inspect.getouterframes(frame)
-        outer_frames = [frame for frame in outer_frames if not self._is_progshot_frame(frame)]
+        outer_frames = [frame_info for frame_info in outer_frames if not is_progshot_frame(frame_info.frame)]
 
         if outer is not None:
             assert(outer >= 0)

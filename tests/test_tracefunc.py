@@ -2,6 +2,7 @@
 # For details: https://github.com/gaogaotiantian/progshot/blob/master/NOTICE.txt
 
 
+import dis
 import inspect
 import progshot
 from progshot.film import Film
@@ -42,7 +43,7 @@ class TestTraceFunc(unittest.TestCase):
         # trigger, so we can keep count of depth. For sys.profile, "call"
         # and "return" will always trigger, so we set curr_depth to a larger
         # value
-        tf = TraceFunc(capture=p.capture, depth=6, outer=0, curr_depth=4)
+        tf = TraceFunc(capture=p.capture, depth=8, outer=0, curr_depth=6)
         sys.setprofile(tf)
         # Trigger the trace function
         p.config(save_at_exit=False)
@@ -55,8 +56,14 @@ class TestTraceFunc(unittest.TestCase):
         p = progshot.ProgShot(save_at_exit=False)
 
         frames = inspect.getouterframes(inspect.currentframe())
-        tf = TraceFunc(capture=p.capture, depth=6, outer=0, curr_depth=4)
+        tf = TraceFunc(capture=p.capture, depth=10, outer=0, curr_depth=8)
         sys.setprofile(tf)
-        _ = Film(frames)
+        _ = Film(frames[-1:])
         sys.setprofile(None)
         self.assertGreater(len(p._films), 30)
+
+    def test_is_ins_local(self):
+        p = progshot.ProgShot(save_at_exit=False)
+        tf = TraceFunc(capture=p.capture, depth=1, outer=0)
+        self.assertTrue(all([tf._is_ins_local(ins) for ins in dis.get_instructions("a = 2")]))
+        self.assertFalse(all([tf._is_ins_local(ins) for ins in dis.get_instructions("a[3] = 2")]))
