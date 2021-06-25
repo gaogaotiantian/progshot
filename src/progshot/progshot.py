@@ -4,6 +4,7 @@
 
 import atexit
 import dill
+import dis
 import functools
 import inspect
 import sys
@@ -16,18 +17,46 @@ class TraceFunc:
         self.curr_depth = curr_depth
         self.outer = outer
         self.capture = capture
+        self.pickled_objects = {}
 
     def __call__(self, frame, event, arg):
         if event == "call":
+            self.pickled_objects = {}
             if self.curr_depth >= self.depth:
                 return None
             self.curr_depth += 1
             return self
         elif event == "line":
-            self.capture(frame=frame, outer=self.curr_depth + self.outer - 1)
+            self.capture(frame=frame, outer=self.curr_depth + self.outer - 1, pickled_objects=self.pickled_objects)
+            if not self._local_change(frame):
+                self.pickled_objects = {}
         elif event == "return":
-            self.capture(frame=frame, outer=self.curr_depth + self.outer - 1)
+            self.capture(frame=frame, outer=self.curr_depth + self.outer - 1, pickled_objects=self.pickled_objects)
             self.curr_depth -= 1
+
+    def _get_line_instructions(self, frame):
+        starts_line = frame.f_lineno
+        line_started = False
+        instructions = []
+        for ins in dis.get_instructions(frame.f_code):
+            if not line_started:
+                if ins.starts_line == starts_line:
+                    line_started = True
+                    instructions.append(ins)
+            else:
+                if ins.starts_line is not None:
+                    break
+                instructions.append(ins)
+        return instructions
+
+    def _local_change(self, frame):
+        for ins in self._get_line_instructions(frame):
+            if ins.opname.startswith("CALL_"):
+                return False
+            elif ins.opname.startswith("STORE_"):
+                if ins.opname not in ("STORE_NAME", "STORE_FAST"):
+                    return False
+        return True
 
 
 class PSContext:
@@ -65,7 +94,7 @@ class ProgShot:
         m = inspect.getmodule(frame)
         return m and hasattr(m, "__package__") and m.__package__ == "progshot"
 
-    def capture(self, name=None, frame=None, outer=None):
+    def capture(self, name=None, frame=None, outer=None, pickled_objects={}):
         """
         name: str
             - name of of this capture(film), if None, use
@@ -94,7 +123,7 @@ class ProgShot:
         if name is None:
             name = f"Film-{len(self._films) + 1}"
 
-        new_film = Film(outer_frames, name=name)
+        new_film = Film(outer_frames, name=name, pickled_objects=pickled_objects)
 
         for source in new_film.sources:
             if source not in self._sources:

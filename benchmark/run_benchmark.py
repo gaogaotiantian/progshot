@@ -1,14 +1,23 @@
 import benchmark_cases
 import importlib
 import os
+import sys
 import time
 
 
 class Benchmark:
     def run(self):
+        args = sys.argv
+        if len(sys.argv) > 1:
+            cases = sys.argv[1:]
+        else:
+            cases = ["case"]
         for file in os.listdir(benchmark_cases.__spec__.submodule_search_locations[0]):
             if file.startswith("case") and file.endswith(".py"):
-                self.run_case(file[:-3])
+                case_name = file[:-3]
+                for pattern in cases:
+                    if pattern in case_name:
+                        self.run_case(case_name)
 
     def run_case(self, module_name):
         m = importlib.import_module(f"benchmark_cases.{module_name}")
